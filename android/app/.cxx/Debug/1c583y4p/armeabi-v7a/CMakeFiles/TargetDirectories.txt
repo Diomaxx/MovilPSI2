@@ -1,0 +1,2 @@
+C:/Users/diogo/proyectos/donaciones_movil/android/app/.cxx/Debug/1c583y4p/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/diogo/proyectos/donaciones_movil/android/app/.cxx/Debug/1c583y4p/armeabi-v7a/CMakeFiles/rebuild_cache.dir

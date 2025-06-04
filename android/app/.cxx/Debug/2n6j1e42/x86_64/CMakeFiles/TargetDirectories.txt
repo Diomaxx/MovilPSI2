@@ -1,0 +1,2 @@
+C:/Users/Usuario/Downloads/donaciones_movil29051/donaciones_movil29051/donaciones_movil/android/app/.cxx/Debug/2n6j1e42/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Usuario/Downloads/donaciones_movil29051/donaciones_movil29051/donaciones_movil/android/app/.cxx/Debug/2n6j1e42/x86_64/CMakeFiles/rebuild_cache.dir
