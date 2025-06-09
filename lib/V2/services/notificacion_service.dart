@@ -51,7 +51,6 @@ class NotificacionService {
     }
   }
 
-  // Mostrar una notificación
   static Future<void> _mostrarNotificacion(Notificacion notificacion) async {
     if (!_notificationsInitialized) {
       await initNotifications();
@@ -86,9 +85,9 @@ class NotificacionService {
         notificacion.descripcion,
         notificationDetails,
       );
-      print('🔔 Notificación mostrada: ${notificacion.id}');
+      print('Notificación mostrada: ${notificacion.id}');
     } catch (e) {
-      print('❌ Error al mostrar notificación: $e');
+      print('Error al mostrar notificación: $e');
     }
   }
 
@@ -110,66 +109,62 @@ class NotificacionService {
     }
   }
 
-  // Obtener todas las notificaciones
   static Future<List<Notificacion>> obtenerNotificaciones() async {
     final url = Uri.parse('$baseApiUrl/notificaciones');
 
     try {
-      print('📡 Obteniendo notificaciones desde: $url');
       final response = await http.get(url);
-      print('📥 Respuesta - código: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        print('✅ Datos de notificaciones recibidos exitosamente');
+        print('Datos de notificaciones recibidos exitosamente');
         final notificaciones = data.map((item) => Notificacion.fromJson(item)).toList();
         return notificaciones;
       } else {
-        print('⚠️ Error al obtener notificaciones. Código: ${response.statusCode}');
+        print('Error al obtener notificaciones. Código: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('❌ Error durante la obtención de notificaciones: $e');
+      print('Error durante la obtención de notificaciones: $e');
       return [];
     }
   }
 
-  // Conectar al WebSocket para recibir notificaciones en tiempo real
   static void conectarWebSocket() {
     if (_stompClient != null) {
-      print('🟡 WebSocket ya estaba inicializado');
+      print('WebSocket ya estaba inicializado');
       return;
     }
 
-    print('📡 Intentando conectar al WebSocket para notificaciones...');
+    print('Intentando conectar al WebSocket para notificaciones...');
     initNotifications();
 
     _stompClient = StompClient(
       config: StompConfig(
         url: 'ws://$ip:8080/ws',
         onConnect: (frame) {
-          print('✅ WebSocket de notificaciones conectado');
+          print('WebSocket de notificaciones conectado');
           _stompClient!.subscribe(
             destination: '/topic/nueva-notificacion',
             callback: (frame) async {
               try {
                 final data = jsonDecode(frame.body!);
-                print('📨 Notificación recibida por WS: $data');
+                print('Notificación recibida por WS: $data');
 
                 final nuevaNotificacion = Notificacion.fromJson(data);
                 await _mostrarNotificacion(nuevaNotificacion);
                 _notificarNuevaNotificacion(nuevaNotificacion);
               } catch (e) {
-                print('❌ Error procesando notificación del WS: $e');
+                print('Error procesando notificación del WS: $e');
               }
             },
           );
         },
         onDisconnect: (frame) {
-          print('🔌 WebSocket de notificaciones desconectado');
+          print('WebSocket de notificaciones desconectado');
         },
         onWebSocketError: (dynamic error) {
-          print('❗ Error en WebSocket de notificaciones: $error');
+          print('Error en WebSocket de notificaciones: $error');
         },
         reconnectDelay: Duration(seconds: 5),
         heartbeatIncoming: Duration(seconds: 10),
@@ -180,19 +175,17 @@ class NotificacionService {
     );
 
     _stompClient!.activate();
-    print('⏳ Activando WebSocket de notificaciones...');
+    print('Activando WebSocket de notificaciones...');
   }
 
-  // Desconectar del WebSocket
   static void desconectarWebSocket() {
     if (_stompClient != null) {
       _stompClient!.deactivate();
       _stompClient = null;
-      print('🛑 Desconectado del WebSocket de notificaciones');
+      print('Desconectado del WebSocket de notificaciones');
     }
   }
 
-  // Formatear fecha para la UI
   static String formatearFecha(String fecha) {
     if (fecha.isEmpty) return 'Sin fecha';
     
@@ -204,7 +197,6 @@ class NotificacionService {
     }
   }
 
-  // Obtener color basado en nivel de severidad
   static Color obtenerColorSeveridad(String nivelSeveridad) {
     switch (nivelSeveridad.toLowerCase()) {
       case 'alta':
@@ -218,7 +210,6 @@ class NotificacionService {
     }
   }
 
-  // Obtener icono basado en tipo de notificación
   static IconData obtenerIconoTipo(String tipo) {
     switch (tipo.toLowerCase()) {
       case 'solicitud':

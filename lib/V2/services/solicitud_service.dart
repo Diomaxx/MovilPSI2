@@ -146,21 +146,19 @@ class SolicitudService {
     final url = Uri.parse('$baseApiUrl/solicitudes');
 
     try {
-      print('📡 Obteniendo solicitudes desde: $url');
       final response = await http.get(url);
-      print('📥 Respuesta - código: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        print('✅ Datos de solicitudes recibidos exitosamente');
+        print('Datos de solicitudes recibidos exitosamente');
         final solicitudes = data.map((item) => _controller.fromJson(item)).toList();
         return solicitudes;
       } else {
-        print('⚠️ Error al obtener solicitudes. Código: ${response.statusCode}');
+        print('⚠Error al obtener solicitudes. Código: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('❌ Error durante la obtención de solicitudes: $e');
+      print('Error durante la obtención de solicitudes: $e');
       return [];
     }
   }

@@ -798,7 +798,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
         children: [
           _buildStatRow(
             'Tiempo de Respuesta',
-            _metrics?.tiempoPromedioRespuesta ?? 'N/A',
+            _metrics?.tiempoPromedioRespuesta != null
+                ? truncateToOneDecimal(_metrics!.tiempoPromedioRespuesta)
+                : 'N/A',
             Icons.timer_outlined,
           ),
           Divider(height: 20),

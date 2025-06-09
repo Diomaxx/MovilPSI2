@@ -221,7 +221,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    estado!,
+                    estado == "Iniciando armado de paquete" ? "Armando Paq." : estado!,
                     style: TextStyle(
                       color: textColor,
                       fontSize: 12,

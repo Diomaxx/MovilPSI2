@@ -10,21 +10,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 class DonacionService {
   static final DonacionController _controller = DonacionController();
   
-  // Método para obtener todas las donaciones
   static Future<List<Donacion>> obtenerDonaciones() async {
     final url = Uri.parse('$baseApiUrl/donaciones/new');
 
     try {
-      print('Obteniendo donaciones desde: $url');
       final response = await http.get(url);
-      print('Respuesta de donaciones - código: ${response.statusCode}');
-      
+
       if (response.statusCode == 200) {
         try {
           final List<dynamic> data = jsonDecode(response.body);
           print('Datos de donaciones recibidos exitosamente');
           
-          // Convertir cada elemento JSON a un objeto Donacion
           final donaciones = data.map((item) => _controller.fromJson(item)).toList();
           return donaciones;
         } catch (parseError) {
@@ -41,7 +37,6 @@ class DonacionService {
     }
   }
 
-  /// Actualiza el estado de una donación
   static Future<bool> actualizarDonacion({
     required int idDonacion,
     required String ciUsuario,
@@ -52,7 +47,6 @@ class DonacionService {
   }) async {
     final url = Uri.parse('$baseApiUrl/donaciones/actualizar/$idDonacion');
     
-    // Preparar body del request
     final Map<String, dynamic> body = {
       'ciUsuario': ciUsuario,
       'estado': estado,
@@ -60,10 +54,9 @@ class DonacionService {
       'longitud': longitud,
     };
     
-    // Si hay imagen, convertirla a base64
     if (imagen != null) {
       final String base64Image = base64Encode(imagen);
-      final String dataUri = 'data:image/jpeg;base64,$base64Image'; // o image/png según el tipo
+      final String dataUri = 'data:image/jpeg;base64,$base64Image';
       body['imagen'] = dataUri;    }
     
     try {
@@ -75,14 +68,13 @@ class DonacionService {
         body: jsonEncode(body),
       );
       
-      print('📥 Respuesta - código: ${response.statusCode}');
-      
+
       if (response.statusCode == 200) {
-        print('✅ Donación actualizada exitosamente');
+        print('Donación actualizada exitosamente');
         return true;
       } else {
-        print('⚠️ Error al actualizar donación. Código: ${response.statusCode}');
-        print('⚠️ Respuesta: ${response.body}');
+        print('Error al actualizar donación. Código: ${response.statusCode}');
+        print('Respuesta: ${response.body}');
 
         Fluttertoast.showToast(
           msg: "Debes estar mas cerca del destino",
@@ -96,7 +88,7 @@ class DonacionService {
         return false;
       }
     } catch (e) {
-      print('❌ Error durante la actualización de donación: $e');
+      print('Error durante la actualización de donación: $e');
       return false;
     }
   }

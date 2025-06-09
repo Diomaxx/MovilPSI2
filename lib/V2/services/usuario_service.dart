@@ -7,7 +7,6 @@ import '../controllers/usuario_controller.dart';
 class UsuarioService {
   static final UsuarioController _controller = UsuarioController();
   
-  // Method to verify CI and get user information including admin status
   static Future<Usuario?> verifyUserByCI(String ci) async {
     final url = Uri.parse('$baseApiUrl/usuarios/ci/$ci');
 
@@ -70,12 +69,10 @@ class UsuarioService {
           return null;
         }
       } else {
-        // Return null on failed login
         print('Login failed with status code: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      // Handle exceptions
       print('Error during login: $e');
       return null;
     }
@@ -113,41 +110,4 @@ class UsuarioService {
     }
   }
 
-  // Method to get user profile
-  static Future<Usuario?> getProfile(int idUsuario) async {
-    final url = Uri.parse('$baseApiUrl/usuarios/$idUsuario');
-
-    try {
-      final response = await http.get(url);
-      
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return _controller.fromJson(data);
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('Error getting profile: $e');
-      return null;
-    }
-  }
-
-  // Method to update user profile
-  static Future<bool> updateProfile(Usuario usuario) async {
-    final url = Uri.parse('$baseApiUrl/usuarios/${usuario.idUsuario}');
-
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-
-    final body = jsonEncode(_controller.toJson(usuario));
-
-    try {
-      final response = await http.put(url, headers: headers, body: body);
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Error updating profile: $e');
-      return false;
-    }
-  }
 } 
