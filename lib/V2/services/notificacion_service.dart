@@ -7,20 +7,17 @@ import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import '../../config.dart';
 import '../models/notificacion.dart';
+import 'api_client.dart';
 
 class NotificacionService {
-  // Lista de callbacks para nuevas notificaciones
   static final List<Function(Notificacion)> _nuevaNotificacionCallbacks = [];
 
-  // Plugin para notificaciones locales
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
   static bool _notificationsInitialized = false;
 
-  // Cliente para WebSocket
   static StompClient? _stompClient;
 
-  // Inicializar las notificaciones
   static Future<void> initNotifications() async {
     if (_notificationsInitialized) return;
 
@@ -37,16 +34,15 @@ class NotificacionService {
 
     await _notificationsPlugin.initialize(initializationSettings);
     _notificationsInitialized = true;
-    print('✅ Notificaciones inicializadas correctamente');
+    print('Notificaciones inicializadas correctamente');
   }
 
-  // Solicitar permisos para notificaciones
   static Future<void> requestNotificationPermission() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       final status = await Permission.notification.status;
       if (!status.isGranted) {
         final result = await Permission.notification.request();
-        print('🔐 Permiso notificaciones: $result');
+        print('Permiso notificaciones: $result');
       }
     }
   }
@@ -91,17 +87,14 @@ class NotificacionService {
     }
   }
 
-  // Añadir listener para nuevas notificaciones
   static void addNuevaNotificacionListener(Function(Notificacion) callback) {
     _nuevaNotificacionCallbacks.add(callback);
   }
 
-  // Eliminar listener para nuevas notificaciones
   static void removeNuevaNotificacionListener(Function(Notificacion) callback) {
     _nuevaNotificacionCallbacks.remove(callback);
   }
 
-  // Notificar sobre una nueva notificación
   static void _notificarNuevaNotificacion(Notificacion notificacion) {
     _mostrarNotificacion(notificacion);
     for (var callback in _nuevaNotificacionCallbacks) {
@@ -110,10 +103,10 @@ class NotificacionService {
   }
 
   static Future<List<Notificacion>> obtenerNotificaciones() async {
-    final url = Uri.parse('$baseApiUrl/notificaciones');
+    final url = '$baseApiUrl/notificaciones';
 
     try {
-      final response = await http.get(url);
+      final response = await ApiClient.get(url);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);

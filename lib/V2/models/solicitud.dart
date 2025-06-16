@@ -40,7 +40,7 @@ class Solicitud {
   final Solicitante solicitante;
   final Destino destino;
   
-  // Para notificaciones
+  
   bool isNew = false;
   bool isRead = false;
 

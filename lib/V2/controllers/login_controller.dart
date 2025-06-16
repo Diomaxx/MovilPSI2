@@ -17,7 +17,7 @@ class LoginController {
     return await UsuarioService.login(cedula, password);
   }
 
-  // Limpiar campos
+  
   void limpiarCampos() {
     cedulaController.clear();
     passwordController.clear();

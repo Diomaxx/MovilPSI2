@@ -1,5 +1,4 @@
 
-//const String ip = '10.26.0.139';
 const String ip = '34.123.227.162';
 
 const String baseApiUrl = 'http://$ip:8080/api';

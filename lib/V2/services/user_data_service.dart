@@ -1,8 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Service to manage persistent user data across the app
 class UserDataService {
-  // Keys for SharedPreferences
   static const String _userCiKey = 'user_ci';
   static const String _userAdminKey = 'user_admin';
 
@@ -57,11 +55,23 @@ class UserDataService {
   static Future<bool> clearUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-      print('🧹 User data cleared');
+      await prefs.remove(_userCiKey);
+      await prefs.remove(_userAdminKey);
+      print('User data cleared');
       return true;
     } catch (e) {
-      print('❌ Error clearing user data: $e');
+      print('Error clearing user data: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> hasUserData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ci = prefs.getString(_userCiKey);
+      return ci != null && ci.isNotEmpty;
+    } catch (e) {
+      print('Error checking user data: $e');
       return false;
     }
   }

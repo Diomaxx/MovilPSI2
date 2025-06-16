@@ -12,7 +12,7 @@ class NotificacionesScreen extends StatefulWidget {
 }
 
 class _NotificacionesScreenState extends State<NotificacionesScreen> {
-  // Estado
+  
   bool _isLoading = true;
   List<Notificacion> _notificaciones = [];
   String? _errorMessage;
@@ -29,33 +29,33 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     super.initState();
     _cargarNotificaciones();
 
-    // Agregar listener para nuevas notificaciones
+    
     NotificacionService.addNuevaNotificacionListener(_onNuevaNotificacion);
 
-    // Conectarse al WebSocket
+    
     NotificacionService.conectarWebSocket();
   }
 
   @override
   void dispose() {
-    // Eliminar listener y desconectar WebSocket
+    
     NotificacionService.removeNuevaNotificacionListener(_onNuevaNotificacion);
-    // No desconectamos el WebSocket aquí para mantenerlo activo en la app
+    
     super.dispose();
   }
 
-  // Callback para nuevas notificaciones
+  
   void _onNuevaNotificacion(Notificacion nuevaNotificacion) {
     setState(() {
-      // Inserta al inicio de la lista para que aparezca arriba
+      
       _notificaciones.insert(0, nuevaNotificacion);
 
-      // Mostrar notificación en pantalla
+      
       _mostrarNotificacionUI(nuevaNotificacion);
     });
   }
 
-  // Mostrar una notificación estilo toast
+  
   void _mostrarNotificacionUI(Notificacion notificacion) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -76,14 +76,14 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
           label: 'VER',
           textColor: const Color.fromARGB(255, 212, 169, 17),
           onPressed: () {
-            // No hace nada especial, solo cierra la notificación
+            
           },
         ),
       ),
     );
   }
 
-  // Cargar notificaciones
+  
   Future<void> _cargarNotificaciones() async {
     if (!mounted) return;
 
@@ -111,7 +111,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     }
   }
 
-  // Marcar una notificación como leída
+  
   void _marcarComoLeida(Notificacion notificacion) {
     setState(() {
       notificacion.isRead = true;
@@ -195,7 +195,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
       );
     }
 
-    // Lista de notificaciones
+    
     return Column(
       children: [
         Container(
@@ -260,17 +260,15 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
 
   }
 
-  // Construir una notificación
+
   Widget _buildNotificacionItem(Notificacion notificacion) {
-    // Determinar el color de fondo basado en si es nueva o leída
+    
     final backgroundColor = notificacion.isNew
         ? Colors.blue.withOpacity(0.12)
         : (notificacion.isRead ? Colors.transparent : Colors.grey.withOpacity(0.05));
 
-    // Determinar el color del indicador de estado según severidad
     final Color severidadColor = NotificacionService.obtenerColorSeveridad(notificacion.nivelSeveridad);
 
-    // Obtener el icono según tipo de notificación
     final IconData tipoIcono = NotificacionService.obtenerIconoTipo(notificacion.tipo);
 
     return GestureDetector(
@@ -291,7 +289,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Icono o avatar
             Container(
               width: 35,
               height: 35,
@@ -309,12 +306,10 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
             ),
             const SizedBox(width: 16),
 
-            // Contenido
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Título con indicador de estado
                   Row(
                     children: [
                       Expanded(
@@ -330,7 +325,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Fecha
                       Text(
                         NotificacionService.formatearFecha(notificacion.fechaCreacion),
                         style: TextStyle(
@@ -342,7 +336,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                   ),
                   const SizedBox(height: 3),
 
-                  // Descripción
                   Text(
                     const Utf8Decoder().convert( notificacion.descripcion.runes.toList()),
                     style: TextStyle(
@@ -354,7 +347,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                   ),
                   const SizedBox(height: 3),
 
-                  // Severidad y tipo
                   Row(
                     children: [
                       Container(
@@ -389,7 +381,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
               ),
             ),
 
-            // Indicador de nueva notificación
             if (notificacion.isNew)
               Container(
                 width: 12,

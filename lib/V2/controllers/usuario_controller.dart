@@ -2,10 +2,8 @@ import '../models/usuario.dart';
 
 class UsuarioController {
   Usuario fromJson(Map<String, dynamic> json) {
-    // Print out the structure of the JSON response for debugging
     print('Response JSON structure: $json');
     
-    // Check if the response contains 'usuario' property which is often the case with login responses
     final userData = json.containsKey('usuario') ? json['usuario'] : json;
     
     return Usuario(
@@ -13,7 +11,6 @@ class UsuarioController {
       nombre: userData['nombre'] ?? '',
       apellido: userData['apellido'] ?? '',
       correoElectronico: userData['correoElectronico'] ?? '',
-      // Handle both field name possibilities
       ci: userData['ci'] ?? userData['cedulaIdentidad'] ?? '',
       telefono: userData['telefono'] ?? '',
       contrasena: userData['contrasena'] ?? '',

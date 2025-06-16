@@ -4,6 +4,7 @@ import 'V2/screens/home_screen.dart';
 import 'V2/screens/login_screen.dart';
 import 'V2/screens/register_screen.dart';
 import 'V2/services/notificacion_service.dart';
+import 'V2/services/usuario_service.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -92,17 +93,42 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   bool _isLoggedIn = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Check for existing login session here if needed
+    _checkAuthenticationStatus();
 
     // Conectar al WebSocket para recibir notificaciones
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Conectar al WebSocket después de que se haya construido la UI
       NotificacionService.conectarWebSocket();
     });
+  }
+
+  Future<void> _checkAuthenticationStatus() async {
+    try {
+      // Check if user has valid JWT token
+      final isAuthenticated = await UsuarioService.isAuthenticated();
+      
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = isAuthenticated;
+          _isLoading = false;
+        });
+      }
+      
+      print('🔐 Authentication status: ${isAuthenticated ? 'AUTHENTICATED' : 'NOT AUTHENTICATED'}');
+    } catch (e) {
+      print('❌ Error checking authentication: $e');
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = false;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -114,9 +140,15 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoggedIn
-          ? const HomeScreen() // Si está logueado, muestra HomeScreen
-          : const LoginScreen(), // Si no está logueado, muestra LoginScreen
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFFE3AB1C), // Golden yellow
+              ),
+            )
+          : _isLoggedIn
+              ? const HomeScreen() // Si está logueado, muestra HomeScreen
+              : const LoginScreen(), // Si no está logueado, muestra LoginScreen
     );
   }
 }

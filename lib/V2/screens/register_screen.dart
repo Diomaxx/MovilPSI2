@@ -9,26 +9,20 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Controller for registration form
   final RegisterController _controller = RegisterController();
 
-  // Loading state and error handling
   bool _isLoading = false;
   String _errorMessage = '';
 
   @override
   void dispose() {
-    // Clean up controllers when widget is disposed
     _controller.limpiarCampos();
     super.dispose();
   }
 
-  // Handle registration attempt
   Future<void> _handleRegister() async {
-    // Ocultar teclado
     FocusScope.of(context).unfocus();
 
-    // Validación simple de campos
     if (_controller.nombreController.text.isEmpty ||
         _controller.apellidoController.text.isEmpty ||
         _controller.correoController.text.isEmpty ||
@@ -41,7 +35,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // Validación simple de correo electrónico
     if (!_controller.correoController.text.contains('@')) {
       setState(() {
         _errorMessage = 'Por favor ingrese un correo electrónico válido';
@@ -75,12 +68,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final usuario = await _controller.registrar();
 
       if (usuario != null) {
-        // Si el registro es exitoso, limpiar campos y navegar a login
         _controller.limpiarCampos();
         print('Registro exitoso, redirigiendo a login');
 
         if (mounted) {
-          // Mostrar mensaje de éxito
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Registro exitoso. Por favor inicie sesión.'),
@@ -88,7 +79,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           );
 
-          // Navegar a login automáticamente
           Navigator.pushReplacementNamed(context, '/login');
         }
       } else {
@@ -133,14 +123,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        // Applying a gradient background similar to the login screen
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF171731), // 93% opacity dark navy
-              Color(0xFF10151F), // 38% opacity black
+              Color(0xFF171731), 
+              Color(0xFF10151F), 
             ],
             stops: [0.3, 1.0],
           ),
@@ -153,7 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // App logo
                   Container(
                     height: 100,
                     width: 100,
@@ -176,7 +164,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     child: Column(
                       children: [
-                        // Title
                         const Text(
                           'Crear Cuenta',
                           style: TextStyle(
@@ -188,10 +175,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Nombre Input
                         TextField(
                           controller: _controller.nombreController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Nombre',
                             labelStyle: TextStyle(
@@ -214,10 +200,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Apellido Input
                         TextField(
                           controller: _controller.apellidoController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Apellido',
                             labelStyle: TextStyle(
@@ -240,10 +225,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Correo input
                         TextField(
                           controller: _controller.correoController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Correo Electrónico',
                             labelStyle: TextStyle(
@@ -266,10 +250,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // CI Input
                         TextField(
                           controller: _controller.cedulaController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Cédula de Identidad',
                             labelStyle: TextStyle(
@@ -291,7 +274,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           textInputAction: TextInputAction.next,
                         ),
                         const SizedBox(height: 16),
-                        //TELEFONO
                         TextField(
                           controller: _controller.celularController,
                           style: const TextStyle(color: Color(0xFFD6E2FF)), 
@@ -316,10 +298,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           textInputAction: TextInputAction.next,
                         ),
                         const SizedBox(height: 16),
-                        // Password Input
                         TextField(
                           controller: _controller.passwordController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
                             labelStyle: TextStyle(
@@ -343,7 +324,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Error message
                         if (_errorMessage.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
@@ -354,14 +334,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
 
-                        // Register Button
+                        
                         ElevatedButton(
                           onPressed: _isLoading ? null : _handleRegister,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDAAB34), // Golden yellow
-                            foregroundColor: const Color(0xFF232323), // White text
+                            backgroundColor: const Color(0xFFDAAB34), 
+                            foregroundColor: const Color(0xFF232323), 
                             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
-                            disabledBackgroundColor: const Color(0xFF3A4C7D).withOpacity(0.5), // Navy blue with opacity
+                            disabledBackgroundColor: const Color(0xFF3A4C7D).withOpacity(0.5), 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -371,7 +351,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
-                              color: Color(0xFFF6F6F8), // White
+                              color: Color(0xFFF6F6F8), 
                               strokeWidth: 2.0,
                             ),
                           )
@@ -384,14 +364,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Login Link
+                        
                         TextButton(
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, '/login');
                           },
                           child: const Text(
                             '¿Ya tienes cuenta? Iniciar sesión',
-                            style: TextStyle(color: Color(0x99FFFFFF), fontSize: 12), // Light blue text
+                            style: TextStyle(color: Color(0x99FFFFFF), fontSize: 12), 
                           ),
                         ),
                       ],

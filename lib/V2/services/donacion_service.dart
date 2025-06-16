@@ -6,15 +6,16 @@ import '../../config.dart';
 import '../models/donacion.dart';
 import '../controllers/donacion_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'api_client.dart';
 
 class DonacionService {
   static final DonacionController _controller = DonacionController();
   
   static Future<List<Donacion>> obtenerDonaciones() async {
-    final url = Uri.parse('$baseApiUrl/donaciones/new');
+    final url = '$baseApiUrl/donaciones/new';
 
     try {
-      final response = await http.get(url);
+      final response = await ApiClient.get(url);
 
       if (response.statusCode == 200) {
         try {
@@ -45,7 +46,7 @@ class DonacionService {
     required double longitud,
     Uint8List? imagen,
   }) async {
-    final url = Uri.parse('$baseApiUrl/donaciones/actualizar/$idDonacion');
+    final url = '$baseApiUrl/donaciones/actualizar/$idDonacion';
     
     final Map<String, dynamic> body = {
       'ciUsuario': ciUsuario,
@@ -57,17 +58,13 @@ class DonacionService {
     if (imagen != null) {
       final String base64Image = base64Encode(imagen);
       final String dataUri = 'data:image/jpeg;base64,$base64Image';
-      body['imagen'] = dataUri;    }
+      body['imagen'] = dataUri;
+    }
     
     try {
       print('Body: $body');
       print('Actualizando donación en: $url');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
-      
+      final response = await ApiClient.post(url, body: body);
 
       if (response.statusCode == 200) {
         print('Donación actualizada exitosamente');

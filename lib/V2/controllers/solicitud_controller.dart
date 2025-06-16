@@ -1,7 +1,7 @@
 import '../models/solicitud.dart';
 
 class SolicitudController {
-  // Convertir JSON a objeto Solicitud
+  
   Solicitud fromJson(Map<String, dynamic> json, {bool isNew = false}) {
     return Solicitud(
       idSolicitud: json['idSolicitud']?.toString() ?? '',
@@ -19,7 +19,7 @@ class SolicitudController {
     );
   }
   
-  // Convertir JSON a objeto Solicitante
+  
   Solicitante _solicitanteFromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return Solicitante(
@@ -40,7 +40,7 @@ class SolicitudController {
     );
   }
   
-  // Convertir JSON a objeto Destino
+  
   Destino _destinoFromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return Destino(
@@ -59,7 +59,7 @@ class SolicitudController {
     );
   }
   
-  // Formatear fecha
+  
   String formatearFecha(String fecha) {
     if (fecha.isEmpty) return 'Sin fecha';
     
@@ -74,7 +74,7 @@ class SolicitudController {
     }
   }
   
-  // Obtener estado como texto
+  
   String obtenerEstadoTexto(bool? aprobada) {
     if (aprobada == null) return 'Pendiente';
     if (aprobada) return 'Aprobada';

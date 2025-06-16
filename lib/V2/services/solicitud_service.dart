@@ -34,7 +34,7 @@ class SolicitudService {
 
     await _notificationsPlugin.initialize(initializationSettings);
     _notificationsInitialized = true;
-    print('✅ Notificaciones inicializadas correctamente');
+    print('Notificaciones inicializadas correctamente');
   }
 
   static Future<void> requestNotificationPermission() async {
@@ -42,7 +42,7 @@ class SolicitudService {
       final status = await Permission.notification.status;
       if (!status.isGranted) {
         final result = await Permission.notification.request();
-        print('🔐 Permiso notificaciones: $result');
+        print('Permiso notificaciones: $result');
       }
     }
   }
@@ -81,9 +81,9 @@ class SolicitudService {
         'Se ha recibido una solicitud de ${solicitud.destino?.comunidad ?? "comunidad desconocida"}',
         notificationDetails,
       );
-      print('🔔 Notificación mostrada para solicitud: ${solicitud.idSolicitud}');
+      print('Notificación mostrada para solicitud: ${solicitud.idSolicitud}');
     } catch (e) {
-      print('❌ Error al mostrar notificación: $e');
+      print('Error al mostrar notificación: $e');
     }
   }
 
@@ -121,9 +121,9 @@ class SolicitudService {
         'Destino ID: ${solicitud.idDestino}, Personas: ${solicitud.cantidadPersonas}',
         notificationDetails,
       );
-      print('🔔 Notificación WS mostrada para solicitud: ${solicitud.id}');
+      print('Notificación WS mostrada para solicitud: ${solicitud.id}');
     } catch (e) {
-      print('❌ Error al mostrar notificación WS: $e');
+      print('Error al mostrar notificación WS: $e');
     }
   }
 
@@ -154,7 +154,7 @@ class SolicitudService {
         final solicitudes = data.map((item) => _controller.fromJson(item)).toList();
         return solicitudes;
       } else {
-        print('⚠Error al obtener solicitudes. Código: ${response.statusCode}');
+        print('Error al obtener solicitudes. Código: ${response.statusCode}');
         return [];
       }
     } catch (e) {
@@ -167,38 +167,38 @@ class SolicitudService {
 
   static void conectarWebSocket(BuildContext context) {
     if (_stompClient != null) {
-      print('🟡 WebSocket ya estaba inicializado');
+      print('WebSocket ya estaba inicializado');
       return;
     }
 
-    print('📡 Intentando conectar al WebSocket...');
+    print('Intentando conectar al WebSocket...');
     initNotifications();
 
     _stompClient = StompClient(
       config: StompConfig(
         url: 'ws://$ip:8080/ws',
         onConnect: (frame) {
-          print('✅ WebSocket conectado');
+          print('WebSocket conectado');
           _stompClient!.subscribe(
             destination: '/topic/nueva-solicitud',
             callback: (frame) async {
               try {
                 final data = jsonDecode(frame.body!);
-                print('📨 Mensaje recibido por WS: $data');
+                print('Mensaje recibido por WS: $data');
 
                 final nuevaSolicitud = NuevaSolicitudWs.fromJson(data);
                 await _mostrarNotificacionWs(nuevaSolicitud);
               } catch (e) {
-                print('❌ Error procesando solicitud del WS: $e');
+                print('Error procesando solicitud del WS: $e');
               }
             },
           );
         },
         onDisconnect: (frame) {
-          print('🔌 WebSocket desconectado');
+          print('WebSocket desconectado');
         },
         onWebSocketError: (dynamic error) {
-          print('❗ Error en WebSocket: $error');
+          print('Error en WebSocket: $error');
         },
         reconnectDelay: Duration(seconds: 5),
         heartbeatIncoming: Duration(seconds: 10),
@@ -209,14 +209,14 @@ class SolicitudService {
     );
 
     _stompClient!.activate();
-    print('⏳ Activando WebSocket...');
+    print('Activando WebSocket...');
   }
 
   static void desconectarWebSocket() {
     if (_stompClient != null) {
       _stompClient!.deactivate();
       _stompClient = null;
-      print('🛑 Desconectado del WebSocket');
+      print('Desconectado del WebSocket');
     }
   }
 }

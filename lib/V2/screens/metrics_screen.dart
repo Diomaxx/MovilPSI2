@@ -14,10 +14,8 @@ class MetricsScreen extends StatefulWidget {
 }
 
 class _MetricsScreenState extends State<MetricsScreen> {
-  // Controller instance
   final MetricsController _controller = MetricsController();
 
-  // State variables
   bool _isLoading = true;
   Metrics? _metrics;
   String? _errorMessage;
@@ -28,7 +26,6 @@ class _MetricsScreenState extends State<MetricsScreen> {
     _fetchMetrics();
   }
 
-  // Fetch metrics data from service
   Future<void> _fetchMetrics() async {
     setState(() {
       _isLoading = true;
@@ -57,7 +54,6 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Build the main body based on state
   Widget _buildBody() {
     if (_isLoading) {
       return Center(
@@ -112,7 +108,6 @@ class _MetricsScreenState extends State<MetricsScreen> {
       );
     }
 
-    // Display metrics content
     return RefreshIndicator(
       onRefresh: _fetchMetrics,
       color: Theme.of(context).primaryColor,
@@ -151,7 +146,6 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Display when metrics were last updated
   Widget _buildLastUpdateSection() {
     final parsedDate = DateTime.tryParse(_metrics?.fechaCreacion ?? '');
     final formattedDate = parsedDate != null
@@ -168,7 +162,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
                 color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                 fontSize: 12,
               ),
-              overflow: TextOverflow.ellipsis, // prevents overflow
+              overflow: TextOverflow.ellipsis, 
             ),
           ),
           IconButton(
@@ -298,7 +292,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
       ),
     );
   }
-  // Pie chart for donaciones status
+  
   Widget _buildDonacionesChart() {
     final entregadas = _metrics?.donacionesEntregadas ?? 0;
     final pendientes = _metrics?.donacionesPendientes ?? 0;
@@ -482,18 +476,18 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Horizontal bar chart for top productos
+  
   Widget _buildTopProductosChart() {
     final topProductos = _metrics?.topProductosMasSolicitados ?? {};
     if (topProductos.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    // Sort products by quantity (descending)
+    
     final sortedProducts = topProductos.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    // Take top 5 products
+
     final top5Products = sortedProducts.take(5).toList();
 
     return _buildCard(
@@ -635,7 +629,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Chart legend item
+  
   Widget _buildChartLegendItem(String label, String value, Color color) {
     return Row(
       children: [
@@ -669,7 +663,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Summary metrics card
+  
   Widget _buildMetricsSummaryCard() {
     final aprobadas = _metrics?.solicitudesAprobadas ?? 0;
     final rechazadas = _metrics?.solicitudesRechazadas ?? 0;
@@ -725,7 +719,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
   }
 
 
-  // Solicitudes stats card
+  
   Widget _buildSolicitudesStatsCard() {
     final aprobadas = _metrics?.solicitudesAprobadas ?? 0;
     final rechazadas = _metrics?.solicitudesRechazadas ?? 0;
@@ -764,7 +758,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
   }
 
 
-  // Donaciones stats card
+  
   Widget _buildDonacionesStatsCard() {
     return _buildCard(
       title: 'Estadísticas de Donaciones',
@@ -790,7 +784,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     if (dotIndex == -1 || dotIndex == input.length - 1) return input;
     return input.substring(0, dotIndex + 2 > input.length ? input.length : dotIndex + 2);
   }
-  // Tiempo promedio card
+
   Widget _buildTiempoPromedioCard() {
     return _buildCard(
       title: 'Tiempos Promedio',
@@ -816,7 +810,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Card widget with consistent styling
+  
   Widget _buildCard({required String title, required Widget child}) {
     return Card(
       elevation: 0,
@@ -849,7 +843,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Stat row with icon
+  
   Widget _buildStatRow(String label, String value, IconData icon) {
     return Row(
       children: [
@@ -880,7 +874,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  // Stat column with percentage
+  
   Widget _buildStatColumn(String label, String value, String percentage, IconData icon) {
     return Column(
       children: [
@@ -918,7 +912,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
   }
 }
 
-// Math utility class for min/max functions
+
 class Math {
   static double min(double a, double b) {
     return a < b ? a : b;

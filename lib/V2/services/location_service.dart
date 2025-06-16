@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Service to manage location-related operations
 class LocationService {
   static const double defaultLatitude = -17.7833;
   static const double defaultLongitude = -63.1821;
@@ -11,7 +10,6 @@ class LocationService {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       print('Los servicios de ubicación están desactivados');
@@ -22,19 +20,16 @@ class LocationService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, try again next time
         print('Permisos de ubicación denegados');
         return false;
       }
     }
     
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately
       print('Permisos de ubicación denegados permanentemente');
       return false;
     }
     
-    // Permissions are granted
     return true;
   }
   

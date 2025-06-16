@@ -1,4 +1,4 @@
-// Modelo para las notificaciones basado en la estructura del API
+
 class Notificacion {
   final String id;
   final String titulo;
@@ -7,7 +7,6 @@ class Notificacion {
   final String nivelSeveridad;
   final String fechaCreacion;
   
-  // Para uso interno de la UI
   bool isRead;
   bool isNew;
 
@@ -22,7 +21,6 @@ class Notificacion {
     this.isNew = false,
   });
 
-  // Factory constructor para crear una Notificación desde un JSON
   factory Notificacion.fromJson(Map<String, dynamic> json) {
     return Notificacion(
       id: json['id'] ?? '',

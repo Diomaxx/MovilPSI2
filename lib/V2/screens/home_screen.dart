@@ -5,6 +5,7 @@ import 'metrics_screen.dart';
 import 'donaciones_screen.dart';
 import 'notificaciones_screen.dart';
 import '../services/notificacion_service.dart';
+import '../services/usuario_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
@@ -19,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late Usuario? _usuario;
 
-  // List of screen titles - will be dynamically generated based on admin status
   List<String> get _screenTitles {
     final titles = ['Donaciones'];
     if (_usuario?.admin == true) {
@@ -29,24 +29,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return titles;
   }
 
-  // Background gradients for different tabs based on web CSS - dynamically generated
   List<Decoration> get _screenBackgrounds {
     final backgrounds = <Decoration>[
-      // Donaciones background - based on don-div
       const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xF21F2033), // 95% opacity dark navy
-            Color.fromARGB(255, 18, 21, 33), // 38% opacity black
+            Color(0xF21F2033), 
+            Color.fromARGB(255, 18, 21, 33), 
           ],
           stops: [0.5, 1.0],
         ),
       ),
     ];
     
-    // Add Métricas background only if user is admin
     if (_usuario?.admin == true) {
       backgrounds.add(
         const BoxDecoration(
@@ -54,8 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xF51F2033), // 96% opacity dark navy
-              Color.fromARGB(255, 18, 21, 33), // 38% opacity black
+              Color(0xF51F2033), 
+              Color.fromARGB(255, 18, 21, 33), 
             ],
             stops: [0.4, 1.0],
           ),
@@ -63,15 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     
-    // Notificaciones background - based on list-div
     backgrounds.add(
       const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xF51F2033), // 96% opacity dark navy
-            Color.fromARGB(255, 18, 21, 33), // 38% opacity black
+            Color(0xF51F2033), 
+            Color.fromARGB(255, 18, 21, 33), 
           ],
           stops: [0.4, 1.0],
         ),
@@ -92,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Get usuario from arguments if not provided via constructor
     if (_usuario == null) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args is Usuario) {
@@ -103,11 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Screens for each tab - dynamically generated based on admin status
   List<Widget> get _screens {
     final screens = <Widget>[const DonacionesScreen()];
     
-    // Add Metrics screen only if user is admin
     if (_usuario?.admin == true) {
       screens.add(const MetricsScreen());
     }
@@ -116,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return screens;
   }
 
-  // Build bottom navigation items dynamically based on admin status
   List<BottomNavigationBarItem> _buildBottomNavigationItems() {
     final items = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(
@@ -125,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
     
-    // Add Metrics tab only if user is admin
     if (_usuario?.admin == true) {
       items.add(
         const BottomNavigationBarItem(
@@ -148,23 +139,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent background to show gradient
-      // Apply gradient background based on selected tab
-      extendBodyBehindAppBar: true, // Make body go behind AppBar
+      backgroundColor: Colors.transparent, 
+      extendBodyBehindAppBar: true, 
       appBar: AppBar(
         backgroundColor: const Color(0xFF1F2033),
         elevation: 0,
-        // Add bottom border
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: const Color(0xFF2D3C66), // Border color matching web
+            color: const Color(0xFF2D3C66), 
           ),
         ),
         title: Row(
           children: [
-            // Logo
             Container(
               width: 45,
               height: 45,
@@ -179,56 +167,81 @@ class _HomeScreenState extends State<HomeScreen> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFF6F6F8), // White text
+                color: Color(0xFFF6F6F8), 
               ),
             ),
           ],
         ),
         actions: [
-          // User greeting
           if (_usuario != null)
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
 
             ),
-          // Logout button
           IconButton(
-            icon: const Icon(Icons.logout, color: Color(0xFFF6F6F8)), // White icon
+            icon: const Icon(Icons.logout, color: Color(0xFFF6F6F8)), 
             onPressed: () {
-              // Show confirmation dialog
               showDialog(
                 context: context,
                 builder: (context) => BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: AlertDialog(
-                    backgroundColor: const Color(0xEB16182E), // glass-modal color
+                    backgroundColor: const Color(0xEB16182E), 
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.zero,
                     ),
                     title: const Text(
                       'Cerrar sesión',
-                      style: TextStyle(color: Color(0xFFF6F6F8)), // White text
+                      style: TextStyle(color: Color(0xFFF6F6F8)), 
                     ),
                     content: const Text(
                       '¿Estás seguro que deseas cerrar sesión?',
-                      style: TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                      style: TextStyle(color: Color(0xFFD6E2FF)), 
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text(
                           'Cancelar',
-                          style: TextStyle(color: Color(0xFFB0C4F1)), // Light blue text
+                          style: TextStyle(color: Color(0xFFB0C4F1)), 
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/login');
+                          
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFFE3AB1C), 
+                              ),
+                            ),
+                          );
+
+                          final success = await UsuarioService.logout();
+                          
+                          if (mounted) {
+                            Navigator.pop(context); 
+                            
+                            if (success) {
+                              
+                              Navigator.pushReplacementNamed(context, '/login');
+                            } else {
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Error al cerrar sesión'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: const Text(
                           'Cerrar sesión',
-                          style: TextStyle(color: Color(0xFFF6F6F8)), // White text
+                          style: TextStyle(color: Color(0xFFF6F6F8)), 
                         ),
                       ),
                     ],
@@ -248,16 +261,16 @@ class _HomeScreenState extends State<HomeScreen> {
           color: const Color(0xFF1F2033),
           border: Border(
             top: BorderSide(
-              color: const Color(0xFF2D3C66), // Border color matching web
+              color: const Color(0xFF2D3C66), 
               width: 1.0,
             ),
           ),
         ),
         child: BottomNavigationBar(
-          backgroundColor: const Color(0xFF1F2033), // Dark navy
-          selectedItemColor: const Color(0xFFE3AB1C), // Golden yellow
+          backgroundColor: const Color(0xFF1F2033), 
+          selectedItemColor: const Color(0xFFE3AB1C), 
           unselectedItemColor: const Color(0xFF5B77B2),
-          // Light blue-gray
+          
           currentIndex: _selectedIndex,
           onTap: (index) => setState(() => _selectedIndex = index),
           type: BottomNavigationBarType.fixed,
@@ -268,15 +281,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
-        backgroundColor: const Color(0xFFE3AB1C), // Golden yellow
-        foregroundColor: const Color(0xFF1F2033), // Dark navy
+        backgroundColor: const Color(0xFFE3AB1C), 
+        foregroundColor: const Color(0xFF1F2033), 
 
         onPressed: () {
-          // Refresh action for donations
+          
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Actualizando donaciones...'),
-              backgroundColor: const Color(0xFF273B6C), // Navy blue
+              backgroundColor: const Color(0xFF273B6C), 
             ),
           );
         },
@@ -287,13 +300,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Placeholder widgets for each tab - replace with actual screens
+
 class _DonacionesPlaceholder extends StatelessWidget {
   const _DonacionesPlaceholder();
 
   @override
   Widget build(BuildContext context) {
-    // Sample donation items
+    
     final List<Map<String, dynamic>> donaciones = [
       {
         'nombre': 'Donación de alimentos',
@@ -324,17 +337,17 @@ class _DonacionesPlaceholder extends StatelessWidget {
       itemBuilder: (context, index) {
         final donacion = donaciones[index];
 
-        // Estado color logic
+        
         Color estadoColor;
         switch (donacion['estado'].toLowerCase()) {
           case 'entregado':
-            estadoColor = const Color(0xFFE3AB1C); // Golden yellow
+            estadoColor = const Color(0xFFE3AB1C); 
             break;
           case 'pendiente':
             estadoColor = Colors.grey;
             break;
           case 'no entregado':
-            estadoColor = const Color(0xFF3A4C7D); // Navy blue
+            estadoColor = const Color(0xFF3A4C7D); 
             break;
           default:
             estadoColor = Colors.grey;
@@ -343,15 +356,15 @@ class _DonacionesPlaceholder extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: const Color(0x4D01031A), // 30% opacity very dark navy - glass-card
+            color: const Color(0x4D01031A), 
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0x1AFFFFFF), // 10% opacity white
+              color: const Color(0x1AFFFFFF), 
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0x80000000), // 50% opacity black
+                color: const Color(0x80000000), 
                 blurRadius: 8,
                 offset: const Offset(0, 8),
               ),
@@ -362,7 +375,7 @@ class _DonacionesPlaceholder extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
               onTap: () {
-                // Handle donation tap
+                
               },
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -376,7 +389,7 @@ class _DonacionesPlaceholder extends StatelessWidget {
                           child: Text(
                             donacion['nombre'],
                             style: const TextStyle(
-                              color: Color(0xFFF6F6F8), // White text
+                              color: Color(0xFFF6F6F8), 
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -396,7 +409,7 @@ class _DonacionesPlaceholder extends StatelessWidget {
                             style: TextStyle(
                               color: donacion['estado'].toLowerCase() == 'entregado'
                                   ? Colors.black
-                                  : const Color(0xFFF6F6F8), // White text
+                                  : const Color(0xFFF6F6F8), 
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -426,13 +439,13 @@ class _DonacionesPlaceholder extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: const Color(0xFFB0C4F1), // Light blue
+          color: const Color(0xFFB0C4F1), 
         ),
         const SizedBox(width: 8),
         Text(
           text,
           style: const TextStyle(
-            color: Color(0xFFD6E2FF), // Light blue text
+            color: Color(0xFFD6E2FF), 
             fontSize: 14,
           ),
         ),
@@ -446,7 +459,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample notification items
+    
     final List<Map<String, dynamic>> notificaciones = [
       {
         'comunidad': 'Comunidad Esperanza',
@@ -486,14 +499,14 @@ class _NotificacionesPlaceholder extends StatelessWidget {
 
     return Column(
       children: [
-        // Filter chips
+        
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0x6601031A), // Semi-transparent very dark navy
+            color: const Color(0x6601031A), 
             border: Border(
               bottom: BorderSide(
-                color: const Color(0xFF2D3C66), // Border color matching web
+                color: const Color(0xFF2D3C66), 
                 width: 1,
               ),
             ),
@@ -515,7 +528,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
           ),
         ),
 
-        // Notifications list
+        
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -523,20 +536,20 @@ class _NotificacionesPlaceholder extends StatelessWidget {
             itemBuilder: (context, index) {
               final notificacion = notificaciones[index];
 
-              // Estado style logic
+              
               Color estadoColor;
               Color textColor;
               String estadoText;
 
               switch (notificacion['estado'].toLowerCase()) {
                 case 'aprobada':
-                  estadoColor = const Color(0xFFE3AB1C).withOpacity(0.2); // Yellow with opacity
+                  estadoColor = const Color(0xFFE3AB1C).withOpacity(0.2); 
                   textColor = const Color(0xFFE3AB1C);
                   estadoText = 'Aprobada';
                   break;
                 case 'pendiente':
-                  estadoColor = const Color(0xFF3A4C7D).withOpacity(0.3); // Navy blue with opacity
-                  textColor = const Color(0xFFB0C4F1); // Light blue
+                  estadoColor = const Color(0xFF3A4C7D).withOpacity(0.3); 
+                  textColor = const Color(0xFFB0C4F1); 
                   estadoText = 'Pendiente';
                   break;
                 case 'rechazada':
@@ -553,15 +566,15 @@ class _NotificacionesPlaceholder extends StatelessWidget {
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0x4D01031A), // 30% opacity very dark navy - glass-card
+                  color: const Color(0x4D01031A), 
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0x1AFFFFFF), // 10% opacity white
+                    color: const Color(0x1AFFFFFF), 
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0x80000000), // 50% opacity black
+                      color: const Color(0x80000000), 
                       blurRadius: 8,
                       offset: const Offset(0, 8),
                     ),
@@ -582,7 +595,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                                 const Text(
                                   'Solicitud de',
                                   style: TextStyle(
-                                    color: Color(0xFFF6F6F8), // White text
+                                    color: Color(0xFFF6F6F8), 
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -590,7 +603,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                                 Text(
                                   notificacion['comunidad'],
                                   style: const TextStyle(
-                                    color: Color(0xFFD6E2FF), // Light blue text
+                                    color: Color(0xFFD6E2FF), 
                                     fontSize: 14,
                                   ),
                                 ),
@@ -636,7 +649,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                       const Text(
                         'Productos solicitados:',
                         style: TextStyle(
-                          color: Color(0xFFF6F6F8), // White text
+                          color: Color(0xFFF6F6F8), 
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -652,7 +665,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF273B6C).withOpacity(0.5), // Navy blue with opacity
+                              color: const Color(0xFF273B6C).withOpacity(0.5), 
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                 color: const Color(0xFF3D518A),
@@ -662,7 +675,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                             child: Text(
                               notificacion['productos'][i],
                               style: const TextStyle(
-                                color: Color(0xFFD6E2FF), // Light blue text
+                                color: Color(0xFFD6E2FF), 
                                 fontSize: 12,
                               ),
                             ),
@@ -688,7 +701,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
                               const Text(
                                 'Motivo de rechazo:',
                                 style: TextStyle(
-                                  color: Color(0xFFF6F6F8), // White text
+                                  color: Color(0xFFF6F6F8), 
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -720,13 +733,13 @@ class _NotificacionesPlaceholder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFFE3AB1C) // Golden yellow when selected
+            ? const Color(0xFFE3AB1C) 
             : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isSelected
-              ? const Color(0xFFE3AB1C) // Golden yellow
-              : const Color(0xFF5B77B2), // Light blue-gray
+              ? const Color(0xFFE3AB1C) 
+              : const Color(0xFF5B77B2), 
           width: 1,
         ),
       ),
@@ -735,7 +748,7 @@ class _NotificacionesPlaceholder extends StatelessWidget {
         style: TextStyle(
           color: isSelected
               ? Colors.black
-              : const Color(0xFFB0C4F1), // Light blue when not selected
+              : const Color(0xFFB0C4F1), 
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -751,14 +764,14 @@ class _NotificacionesPlaceholder extends StatelessWidget {
             TextSpan(
               text: '$label: ',
               style: const TextStyle(
-                color: Color(0xFFB0C4F1), // Light blue
+                color: Color(0xFFB0C4F1), 
                 fontWeight: FontWeight.bold,
               ),
             ),
             TextSpan(
               text: value,
               style: const TextStyle(
-                color: Color(0xFFF6F6F8), // White text
+                color: Color(0xFFF6F6F8), 
               ),
             ),
           ],

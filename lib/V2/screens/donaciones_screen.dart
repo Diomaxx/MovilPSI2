@@ -16,10 +16,8 @@ class DonacionesScreen extends StatefulWidget {
 }
 
 class _DonacionesScreenState extends State<DonacionesScreen> {
-  // Controller
   final DonacionController _controller = DonacionController();
 
-  // Variables de estado
   bool _isLoading = true;
   List<Donacion> _donaciones = [];
   String? _errorMessage;
@@ -32,17 +30,15 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
     _cargarDatosUsuario();
   }
 
-  // Cargar CI del usuario desde SharedPreferences
   Future<void> _cargarDatosUsuario() async {
     final ci = await UserDataService.getUserCi();
     if (mounted) {
       setState(() {
-        _userCi = ci; //REVISAR ESTA LINEA
+        _userCi = ci; 
       });
     }
   }
 
-  // Cargar donaciones desde el servicio
   Future<void> _cargarDonaciones() async {
     setState(() {
       _isLoading = true;
@@ -69,7 +65,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
     return _buildBody();
   }
 
-  // Construir el cuerpo de la pantalla
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(
@@ -154,7 +149,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
       );
     }
 
-    // Mostrar la lista de donaciones
     return RefreshIndicator(
       onRefresh: _cargarDonaciones,
       color: Colors.black,
@@ -173,12 +167,10 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
     );
   }
 
-  // Construir una tarjeta de donación
   Widget _buildDonacionCard(Donacion donacion) {
-    String? estado = donacion.estado; // Usamos directamente el valor
+    String? estado = donacion.estado; 
     bool? yaEntregada = estado?.toLowerCase() == 'entregada';
 
-    // Opcional: un color base para todos los estados, puedes personalizarlo si quieres
     Color estadoColor = Colors.grey[800]!;
     Color textColor = Colors.white;
 
@@ -192,7 +184,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Encabezado
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -233,7 +224,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
             ),
           ),
 
-          // Contenido
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -284,7 +274,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
   }
 
 
-  // Fila de detalle con icono
   Widget _buildDetailRow(String label, String value, IconData icon) {
     return Row(
       children: [
@@ -321,19 +310,15 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
   }
 
 
-  // Modal para actualizar estado de donación
   void _mostrarModalActualizacion(Donacion donacion) async {
-    // Variables para el formulario
     String estadoSeleccionado = 'En Camino';
     Uint8List? imagenBytes;
     File? imagen;
     bool isLoading = false;
 
-    // Coordenadas de ubicación
     double? latitude;
     double? longitude;
 
-    // Verificar si tenemos CI del usuario
     if (_userCi == null || _userCi!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -366,7 +351,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título del modal
+                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -386,7 +371,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                     ),
                     const Divider(color: Colors.grey),
 
-                    // CI del usuario
+                    
                     ListTile(
                       leading: const Icon(Icons.credit_card_outlined, color: Colors.white),
                       title: const Text('Cédula de Identidad',
@@ -398,7 +383,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       dense: true,
                     ),
 
-                    // Estado de la donación
+                    
                     ListTile(
                       leading: const Icon(Icons.inventory_2_outlined, color: Colors.white),
                       title: const Text('Estado',
@@ -435,7 +420,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       ),
                     ),
 
-                    // Ubicación actual con mapa
+                    
                     const ListTile(
                       leading: Icon(Icons.location_on_outlined, color: Colors.white),
                       title: Text('Tu Ubicación Actual',
@@ -446,7 +431,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       ),
                     ),
 
-                    // Mapa con ubicación actual
+                    
                     LocationMapWidget(
                       height: 250,
                       onLocationChanged: (lat, lng) {
@@ -457,7 +442,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       },
                     ),
 
-                    // Imagen de evidencia
+                    
                     ListTile(
                       leading: const Icon(Icons.photo_camera_outlined, color: Colors.white),
                       title: const Text('Imagen de Evidencia',
@@ -469,7 +454,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Botón para tomar foto con la cámara
+                          
                           IconButton(
                             icon: const Icon(Icons.camera_alt, color: Colors.white),
                             tooltip: 'Tomar foto',
@@ -484,13 +469,12 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                               if (pickedFile != null) {
                                 setState(() {
                                   imagen = File(pickedFile.path);
-                                  // Leer bytes de la imagen
                                   imagenBytes = File(pickedFile.path).readAsBytesSync();
                                 });
                               }
                             },
                           ),
-                          // Botón para seleccionar de la galería
+                          
                           IconButton(
                             icon: const Icon(Icons.photo_library, color: Colors.white),
                             tooltip: 'Seleccionar de galería',
@@ -505,7 +489,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                               if (pickedFile != null) {
                                 setState(() {
                                   imagen = File(pickedFile.path);
-                                  // Leer bytes de la imagen
                                   imagenBytes = File(pickedFile.path).readAsBytesSync();
                                 });
                               }
@@ -515,11 +498,9 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                       ),
                     ),
 
-                    // Vista previa de la imagen
                     if (imagen != null) ...[
                       Stack(
                         children: [
-                          // Imagen con posibilidad de ampliar
                           GestureDetector(
                             onTap: () {
                               _mostrarImagenCompleta(context, imagen!);
@@ -536,7 +517,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              // Indicador de que se puede ampliar
                               child: Align(
                                 alignment: Alignment.bottomRight,
                                 child: Container(
@@ -589,7 +569,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                         border: Border.all(color: Colors.grey),
                         color: Colors.grey[850],
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12), // Añade padding interno
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12), 
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -610,7 +590,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                     ),
                     ],
                     const SizedBox(height: 24),
-                    // Botón para guardar cambios
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -638,7 +617,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
                                   backgroundColor: Colors.green,
                                 ),
                               );
-                              // Recargar donaciones
                               _cargarDonaciones();
                             } else if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(

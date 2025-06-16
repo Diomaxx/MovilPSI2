@@ -11,28 +11,28 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Text controllers for form fields
+  
   final TextEditingController _ciController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Loading state
+  
   bool _isLoading = false;
   String _errorMessage = '';
 
   @override
   void dispose() {
-    // Clean up controllers when widget is disposed
+    
     _ciController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // Handle login action
+  
   Future<void> _handleLogin() async {
-    // Hide keyboard
+    
     FocusScope.of(context).unfocus();
 
-    // Validate input fields first
+    
     if (_ciController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
       setState(() {
         _errorMessage = 'Por favor ingrese cédula y contraseña';
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       print('Attempting to login with CI: ${_ciController.text.trim()}');
       
-      // First verify CI and get user information including admin status
+      
       final userInfo = await UsuarioService.verifyUserByCI(_ciController.text.trim());
       
       if (userInfo == null) {
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       
-      // Check if user is active
+      
       if (!userInfo.active) {
         setState(() {
           _errorMessage = 'Usuario inactivo. Contacte al administrador.';
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       
-      // Now proceed with login using the original login method
+      
       final usuario = await UsuarioService.login(
         _ciController.text.trim(),
         _passwordController.text.trim(),
@@ -75,16 +75,16 @@ class _LoginScreenState extends State<LoginScreen> {
       if (usuario != null) {
         print('Login successful, navigating to home');
         
-        // Update the usuario object with admin status from CI verification
+        
         usuario.admin = userInfo.admin;
         usuario.telefono = userInfo.telefono;
         usuario.active = userInfo.active;
 
-        // Save user CI and admin status for later use
+        
         await UserDataService.saveUserCi(_ciController.text.trim());
         await UserDataService.saveUserAdminStatus(usuario.admin);
 
-        // Use Future.delayed to allow setState to complete before navigation
+
         Future.microtask(() {
           Navigator.pushReplacementNamed(context, '/home', arguments: usuario);
         });
@@ -120,8 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF171731), // 93% opacity dark navy
-              Color(0xFF10151F), // 38% opacity black
+              Color(0xFF171731), 
+              Color(0xFF10151F), 
             ],
             stops: [0.3, 1.0],
           ),
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // App logo
+                  
                   const SizedBox(height: 60),
                   Container(
                     height: 120,
@@ -150,19 +150,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   ),
 
-                  // Glass card effect container for login form
+                  
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: const Color(0x1031A), // 30% opacity very dark navy
+                      color: const Color(0x1031A), 
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFFFFFF), // 10% opacity white
+                        color: const Color(0xFFFFFF), 
                         width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0x0), // 50% opacity black
+                          color: const Color(0x0), 
                           blurRadius: 10,
                           offset: const Offset(0, 8),
                         ),
@@ -170,11 +170,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Column(
                       children: [
-                        // Title
+                        
                         const Text(
                           'Iniciar Sesión',
                           style: TextStyle(
-                            color: Color(0xFFCCCCCC), // White text
+                            color: Color(0xFFCCCCCC), 
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
@@ -182,10 +182,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // CI Input
+                        
                         TextField(
                           controller: _ciController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Cédula de Identidad',
                             labelStyle: TextStyle(
@@ -207,10 +207,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Password Input
+                        
                         TextField(
                           controller: _passwordController,
-                          style: const TextStyle(color: Color(0xFFD6E2FF)), // Light blue text
+                          style: const TextStyle(color: Color(0xFFD6E2FF)), 
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
                             labelStyle: TextStyle(color: const Color(0xC5CBCBCB)),
@@ -224,14 +224,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             filled: true,
-                            fillColor: const Color(0x7201031A), // 45% opacity very dark navy
+                            fillColor: const Color(0x7201031A), 
                           ),
                           obscureText: true,
                           onSubmitted: (_) => _handleLogin(),
                         ),
                         const SizedBox(height: 24),
 
-                        // Error message
+                        
                         if (_errorMessage.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
@@ -242,14 +242,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
-                        // Login Button
+                        
                         ElevatedButton(
                           onPressed: _isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDAAB34), // Golden yellow
-                            foregroundColor: const Color(0xFF232323), // White text
+                            backgroundColor: const Color(0xFFDAAB34), 
+                            foregroundColor: const Color(0xFF232323), 
                             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
-                            disabledBackgroundColor: const Color(0xFF3A4C7D).withOpacity(0.5), // Navy blue with opacity
+                            disabledBackgroundColor: const Color(0xFF3A4C7D).withOpacity(0.5), 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -259,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
-                              color: Color(0xFF060915), // White
+                              color: Color(0xFF060915), 
                               strokeWidth: 2.0,
                             ),
                           )
@@ -273,14 +273,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // Register Link
+                        
                         TextButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/register');
                           },
                           child: const Text(
                             '¿No tienes una cuenta? Regístrate',
-                            style: TextStyle(color: Color(0x99FFFFFF), fontSize: 12), // Light blue text
+                            style: TextStyle(color: Color(0x99FFFFFF), fontSize: 12), 
                           ),
                         ),
                       ],

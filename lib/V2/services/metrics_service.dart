@@ -7,7 +7,7 @@ import '../controllers/metrics_controller.dart';
 class MetricsService {
   static final MetricsController _controller = MetricsController();
   
-  // Fetch metrics data from the API
+      
   static Future<Metrics?> getMetrics() async {
     final url = Uri.parse('$baseApiUrl/metricas');
 
