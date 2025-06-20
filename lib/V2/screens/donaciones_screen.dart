@@ -8,6 +8,7 @@ import '../services/user_data_service.dart';
 import '../services/location_service.dart';
 import '../controllers/donacion_controller.dart';
 import '../widgets/location_map.dart';
+import '../mixins/auth_mixin.dart';
 
 class DonacionesScreen extends StatefulWidget {
   const DonacionesScreen({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class DonacionesScreen extends StatefulWidget {
   _DonacionesScreenState createState() => _DonacionesScreenState();
 }
 
-class _DonacionesScreenState extends State<DonacionesScreen> {
+class _DonacionesScreenState extends State<DonacionesScreen> with AuthMixin {
   final DonacionController _controller = DonacionController();
 
   bool _isLoading = true;
@@ -26,6 +27,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
   @override
   void initState() {
     super.initState();
+    validateAuthenticationAndRedirect();
     _cargarDonaciones();
     _cargarDatosUsuario();
   }
@@ -45,19 +47,26 @@ class _DonacionesScreenState extends State<DonacionesScreen> {
       _errorMessage = null;
     });
 
-    try {
-      final donaciones = await DonacionService.obtenerDonaciones();
+    await makeAuthenticatedRequest(() async {
+      try {
+        final donaciones = await DonacionService.obtenerDonaciones();
 
-      setState(() {
-        _donaciones = donaciones;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error al cargar donaciones: $e';
-        _isLoading = false;
-      });
-    }
+        if (mounted) {
+          setState(() {
+            _donaciones = donaciones;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Error al cargar donaciones: $e';
+            _isLoading = false;
+          });
+        }
+      }
+      return null;
+    });
   }
 
   @override

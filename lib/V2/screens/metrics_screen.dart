@@ -5,6 +5,7 @@ import '../models/metrics.dart';
 import '../services/metrics_service.dart';
 import '../controllers/metrics_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../mixins/auth_mixin.dart';
 
 class MetricsScreen extends StatefulWidget {
   const MetricsScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class MetricsScreen extends StatefulWidget {
   _MetricsScreenState createState() => _MetricsScreenState();
 }
 
-class _MetricsScreenState extends State<MetricsScreen> {
+class _MetricsScreenState extends State<MetricsScreen> with AuthMixin {
   final MetricsController _controller = MetricsController();
 
   bool _isLoading = true;
@@ -23,6 +24,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
   @override
   void initState() {
     super.initState();
+    validateAuthenticationAndRedirect();
     _fetchMetrics();
   }
 
@@ -32,19 +34,26 @@ class _MetricsScreenState extends State<MetricsScreen> {
       _errorMessage = null;
     });
 
-    try {
-      final metrics = await MetricsService.getMetrics();
+    await makeAuthenticatedRequest(() async {
+      try {
+        final metrics = await MetricsService.getMetrics();
 
-      setState(() {
-        _metrics = metrics;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error al cargar las métricas: $e';
-        _isLoading = false;
-      });
-    }
+        if (mounted) {
+          setState(() {
+            _metrics = metrics;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Error al cargar las métricas: $e';
+            _isLoading = false;
+          });
+        }
+      }
+      return null;
+    });
   }
 
   @override

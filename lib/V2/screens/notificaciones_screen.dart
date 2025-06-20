@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../models/notificacion.dart';
 import '../services/notificacion_service.dart';
+import '../mixins/auth_mixin.dart';
 
 class NotificacionesScreen extends StatefulWidget {
   const NotificacionesScreen({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class NotificacionesScreen extends StatefulWidget {
   _NotificacionesScreenState createState() => _NotificacionesScreenState();
 }
 
-class _NotificacionesScreenState extends State<NotificacionesScreen> {
+class _NotificacionesScreenState extends State<NotificacionesScreen> with AuthMixin {
   
   bool _isLoading = true;
   List<Notificacion> _notificaciones = [];
@@ -27,12 +28,11 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
   @override
   void initState() {
     super.initState();
+    validateAuthenticationAndRedirect();
     _cargarNotificaciones();
 
-    
     NotificacionService.addNuevaNotificacionListener(_onNuevaNotificacion);
 
-    
     NotificacionService.conectarWebSocket();
   }
 
@@ -92,23 +92,26 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
       _errorMessage = null;
     });
 
-    try {
-      final notificaciones = await NotificacionService.obtenerNotificaciones();
+    await makeAuthenticatedRequest(() async {
+      try {
+        final notificaciones = await NotificacionService.obtenerNotificaciones();
 
-      if (!mounted) return;
-
-      setState(() {
-        _notificaciones = notificaciones;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _errorMessage = 'Error al cargar notificaciones: $e';
-        _isLoading = false;
-      });
-    }
+        if (mounted) {
+          setState(() {
+            _notificaciones = notificaciones;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Error al cargar notificaciones: $e';
+            _isLoading = false;
+          });
+        }
+      }
+      return null;
+    });
   }
 
   

@@ -6,6 +6,7 @@ import 'donaciones_screen.dart';
 import 'notificaciones_screen.dart';
 import '../services/notificacion_service.dart';
 import '../services/usuario_service.dart';
+import '../mixins/auth_mixin.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AuthMixin {
   int _selectedIndex = 0;
   late Usuario? _usuario;
 
@@ -82,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     NotificacionService.conectarWebSocket();
     _usuario = widget.usuario;
+    validateAuthenticationAndRedirect();
   }
 
   @override
@@ -220,24 +222,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
 
-                          final success = await UsuarioService.logout();
-                          
-                          if (mounted) {
-                            Navigator.pop(context); 
-                            
-                            if (success) {
-                              
+                          await makeAuthenticatedRequest(() async {
+                            final success = await UsuarioService.logout();
+                            if (success && mounted) {
+                              Navigator.pop(context);
                               Navigator.pushReplacementNamed(context, '/login');
-                            } else {
-                              
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Error al cerrar sesión'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
                             }
-                          }
+                            return success;
+                          });
                         },
                         child: const Text(
                           'Cerrar sesión',
