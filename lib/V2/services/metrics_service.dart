@@ -3,17 +3,18 @@ import 'package:http/http.dart' as http;
 import '../../config.dart';
 import '../models/metrics.dart';
 import '../controllers/metrics_controller.dart';
+import 'api_client.dart';
 
 class MetricsService {
   static final MetricsController _controller = MetricsController();
   
       
   static Future<Metrics?> getMetrics() async {
-    final url = Uri.parse('$baseApiUrl/metricas');
+    final url = '$baseApiUrl/metricas';
 
     try {
       print('Fetching metrics from: $url');
-      final response = await http.get(url);
+      final response = await ApiClient.get(url);
       print('Metrics response status: ${response.statusCode}');
       
       if (response.statusCode == 200) {

@@ -9,6 +9,7 @@ import '../models/NuevaSolicitudWs.dart';
 import '../controllers/solicitud_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'api_client.dart';
 
 class SolicitudService {
   static final SolicitudController _controller = SolicitudController();
@@ -143,10 +144,10 @@ class SolicitudService {
   }
 
   static Future<List<Solicitud>> obtenerSolicitudes() async {
-    final url = Uri.parse('$baseApiUrl/solicitudes');
+    final url = '$baseApiUrl/solicitudes';
 
     try {
-      final response = await http.get(url);
+      final response = await ApiClient.get(url);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
