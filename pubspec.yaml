@@ -36,7 +36,7 @@ dependencies:
   stomp_dart_client: ^2.0.1
   fl_chart: ^0.64.0
   fluttertoast: ^8.2.2  # o la última versión
-  flutter_local_notifications: ^15.1.1
+  awesome_notifications: ^0.10.1
   permission_handler: ^11.0.1
   geolocator: ^10.1.0
   google_maps_flutter: ^2.5.3

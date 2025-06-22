@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'V2/screens/home_screen.dart';
 import 'V2/screens/login_screen.dart';
 import 'V2/screens/register_screen.dart';
@@ -11,7 +12,39 @@ void main() async {
   // Asegurar que Flutter esté inicializado
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar notificaciones
+  // Inicializar Awesome Notifications globalmente con todos los canales necesarios
+  await AwesomeNotifications().initialize(
+    null, // Usar el ícono de la app por defecto
+    [
+      // Canal principal para notificaciones
+      NotificationChannel(
+        channelKey: 'donaciones_channel',
+        channelName: 'Notificaciones de Donaciones',
+        channelDescription: 'Canal para todas las notificaciones de la aplicación',
+        defaultColor: Colors.black,
+        ledColor: Colors.white,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        playSound: true,
+        enableVibration: true,
+      ),
+      // Canal específico para solicitudes
+      NotificationChannel(
+        channelKey: 'solicitudes_channel',
+        channelName: 'Solicitudes de Donación',
+        channelDescription: 'Notificaciones de nuevas solicitudes de donación',
+        defaultColor: Colors.orange,
+        ledColor: Colors.white,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        playSound: true,
+        enableVibration: true,
+      ),
+    ],
+    debug: false,
+  );
+
+  // Inicializar servicios de notificación
   await NotificacionService.initNotifications();
 
   // Forzar orientación vertical

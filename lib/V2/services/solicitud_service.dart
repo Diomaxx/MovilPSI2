@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import '../../config.dart';
 import '../models/solicitud.dart';
 import '../models/NuevaSolicitudWs.dart';
@@ -15,116 +15,100 @@ class SolicitudService {
   static final SolicitudController _controller = SolicitudController();
   static final List<Function(Solicitud)> _nuevaSolicitudCallbacks = [];
 
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-  FlutterLocalNotificationsPlugin();
   static bool _notificationsInitialized = false;
 
+  /// Inicializa el servicio de notificaciones de solicitudes
   static Future<void> initNotifications() async {
     if (_notificationsInitialized) return;
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings();
-
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-
-    await _notificationsPlugin.initialize(initializationSettings);
-    _notificationsInitialized = true;
-    print('Notificaciones inicializadas correctamente');
-  }
-
-  static Future<void> requestNotificationPermission() async {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final status = await Permission.notification.status;
-      if (!status.isGranted) {
-        final result = await Permission.notification.request();
-        print('Permiso notificaciones: $result');
-      }
+    try {
+      // Solo solicitar permisos ya que Awesome Notifications se inicializa en main.dart
+      await requestNotificationPermission();
+      
+      _notificationsInitialized = true;
+      print('✅ Servicio de notificaciones de solicitudes inicializado correctamente');
+      
+    } catch (e) {
+      print('❌ Error inicializando servicio de notificaciones de solicitudes: $e');
     }
   }
 
+  /// Solicita permisos de notificación
+  static Future<void> requestNotificationPermission() async {
+    try {
+      bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+      if (!isAllowed) {
+        bool? permissionGranted = await AwesomeNotifications().requestPermissionToSendNotifications();
+        print('🔔 Permisos de notificación solicitudes: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
+      }
+    } catch (e) {
+      print('❌ Error solicitando permisos de solicitudes: $e');
+    }
+  }
+
+  /// Muestra notificación para una solicitud usando Awesome Notifications
   static Future<void> _mostrarNotificacion(Solicitud solicitud) async {
     if (!_notificationsInitialized) {
       await initNotifications();
     }
 
-    await requestNotificationPermission();
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'solicitudes_channel',
-      'Solicitudes de Donación',
-      channelDescription: 'Notificaciones de nuevas solicitudes de donación',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
     try {
-      await _notificationsPlugin.show(
-        solicitud.idSolicitud.hashCode,
-        'Nueva solicitud de donación',
-        'Se ha recibido una solicitud de ${solicitud.destino?.comunidad ?? "comunidad desconocida"}',
-        notificationDetails,
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: solicitud.idSolicitud.hashCode,
+          channelKey: 'solicitudes_channel',
+          title: 'Nueva solicitud de donación',
+          body: 'Se ha recibido una solicitud de ${solicitud.destino?.comunidad ?? "comunidad desconocida"}',
+          backgroundColor: Colors.orange,
+          notificationLayout: NotificationLayout.Default,
+          wakeUpScreen: true,
+          category: NotificationCategory.Message,
+          autoDismissible: true,
+          showWhen: true,
+          payload: {
+            'solicitud_id': solicitud.idSolicitud,
+            'tipo': 'solicitud',
+            'comunidad': solicitud.destino?.comunidad ?? '',
+          },
+        ),
       );
-      print('Notificación mostrada para solicitud: ${solicitud.idSolicitud}');
+      
+      print('✅ Notificación de solicitud mostrada: ${solicitud.idSolicitud}');
     } catch (e) {
-      print('Error al mostrar notificación: $e');
+      print('❌ Error al mostrar notificación de solicitud: $e');
     }
   }
 
+  /// Muestra notificación para una solicitud WebSocket usando Awesome Notifications
   static Future<void> _mostrarNotificacionWs(NuevaSolicitudWs solicitud) async {
     if (!_notificationsInitialized) {
       await initNotifications();
     }
 
-    await requestNotificationPermission();
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'solicitudes_channel',
-      'Solicitudes de Donación',
-      channelDescription: 'Notificaciones de nuevas solicitudes de donación',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
     try {
-      await _notificationsPlugin.show(
-        solicitud.id.hashCode,
-        'Nueva solicitud sin responder',
-        'Destino ID: ${solicitud.idDestino}, Personas: ${solicitud.cantidadPersonas}',
-        notificationDetails,
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: solicitud.id.hashCode,
+          channelKey: 'solicitudes_channel',
+          title: 'Nueva solicitud sin responder',
+          body: 'Destino ID: ${solicitud.idDestino}, Personas: ${solicitud.cantidadPersonas}',
+          backgroundColor: Colors.red,
+          notificationLayout: NotificationLayout.Default,
+          wakeUpScreen: true,
+          category: NotificationCategory.Message,
+          autoDismissible: true,
+          showWhen: true,
+          payload: {
+            'solicitud_id': solicitud.id,
+            'tipo': 'solicitud_ws',
+            'destino_id': solicitud.idDestino.toString(),
+          },
+        ),
       );
-      print('Notificación WS mostrada para solicitud: ${solicitud.id}');
+      
+      print('✅ Notificación WS de solicitud mostrada: ${solicitud.id}');
     } catch (e) {
-      print('Error al mostrar notificación WS: $e');
+      print('❌ Error al mostrar notificación WS: $e');
     }
   }
 

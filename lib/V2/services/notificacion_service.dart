@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -11,79 +11,90 @@ import 'api_client.dart';
 
 class NotificacionService {
   static final List<Function(Notificacion)> _nuevaNotificacionCallbacks = [];
-
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
   static bool _notificationsInitialized = false;
-
   static StompClient? _stompClient;
 
+  /// Inicializa el servicio de notificaciones (no reinicializa Awesome Notifications)
   static Future<void> initNotifications() async {
     if (_notificationsInitialized) return;
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings();
-
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-
-    await _notificationsPlugin.initialize(initializationSettings);
-    _notificationsInitialized = true;
-    print('Notificaciones inicializadas correctamente');
-  }
-
-  static Future<void> requestNotificationPermission() async {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final status = await Permission.notification.status;
-      if (!status.isGranted) {
-        final result = await Permission.notification.request();
-        print('Permiso notificaciones: $result');
-      }
+    try {
+      // Solo solicitar permisos ya que Awesome Notifications se inicializa en main.dart
+      await requestNotificationPermission();
+      
+      _notificationsInitialized = true;
+      print('✅ Servicio de notificaciones inicializado correctamente');
+      
+    } catch (e) {
+      print('❌ Error inicializando servicio de notificaciones: $e');
     }
   }
 
+  /// Solicita permisos de notificación
+  static Future<void> requestNotificationPermission() async {
+    try {
+      bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+      if (!isAllowed) {
+        // Mostrar diálogo de permisos
+        bool? permissionGranted = await AwesomeNotifications().requestPermissionToSendNotifications();
+        print('🔔 Permisos de notificación: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
+      } else {
+        print('✅ Permisos de notificación ya concedidos');
+      }
+    } catch (e) {
+      print('❌ Error solicitando permisos: $e');
+    }
+  }
+
+  /// Muestra una notificación usando Awesome Notifications
   static Future<void> _mostrarNotificacion(Notificacion notificacion) async {
     if (!_notificationsInitialized) {
       await initNotifications();
     }
 
-    await requestNotificationPermission();
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'notificaciones_channel',
-      'Notificaciones',
-      channelDescription: 'Notificaciones de la aplicación',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
     try {
-      await _notificationsPlugin.show(
-        notificacion.id.hashCode,
-        notificacion.titulo,
-        notificacion.descripcion,
-        notificationDetails,
+      // Determinar el color de la notificación basado en la severidad
+      Color notificationColor = _obtenerColorPorSeveridad(notificacion.nivelSeveridad);
+      
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: notificacion.id.hashCode,
+          channelKey: 'donaciones_channel',
+          title: notificacion.titulo,
+          body: notificacion.descripcion,
+          backgroundColor: notificationColor,
+          notificationLayout: NotificationLayout.Default,
+          wakeUpScreen: true,
+          category: NotificationCategory.Message,
+          autoDismissible: true,
+          showWhen: true,
+          customSound: null, // Usar sonido por defecto
+          payload: {
+            'notificacion_id': notificacion.id,
+            'tipo': notificacion.tipo,
+            'severidad': notificacion.nivelSeveridad,
+          },
+        ),
       );
-      print('Notificación mostrada: ${notificacion.id}');
+      
+      print('✅ Notificación mostrada con Awesome Notifications: ${notificacion.id}');
     } catch (e) {
-      print('Error al mostrar notificación: $e');
+      print('❌ Error al mostrar notificación: $e');
+    }
+  }
+
+  /// Obtiene el color de la notificación basado en la severidad
+  static Color _obtenerColorPorSeveridad(String severidad) {
+    switch (severidad.toLowerCase()) {
+      case 'alta':
+      case 'critica':
+        return Colors.red;
+      case 'media':
+        return Colors.orange;
+      case 'baja':
+        return Colors.blue;
+      default:
+        return Colors.black;
     }
   }
 
@@ -179,6 +190,28 @@ class NotificacionService {
     }
   }
 
+  /// Obtiene el color según el nivel de severidad para la UI
+  static Color obtenerColorSeveridad(String severidad) {
+    return _obtenerColorPorSeveridad(severidad);
+  }
+
+  /// Obtiene el ícono según el tipo de notificación
+  static IconData obtenerIconoTipo(String tipo) {
+    switch (tipo.toLowerCase()) {
+      case 'alerta':
+        return Icons.warning;
+      case 'solicitud':
+        return Icons.help_outline;
+      case 'donacion':
+        return Icons.favorite;
+      case 'sistema':
+        return Icons.settings;
+      default:
+        return Icons.notifications;
+    }
+  }
+
+  /// Formatea la fecha para mostrar en la UI
   static String formatearFecha(String fecha) {
     if (fecha.isEmpty) return 'Sin fecha';
     
@@ -187,32 +220,6 @@ class NotificacionService {
       return '${fechaDateTime.day}/${fechaDateTime.month}/${fechaDateTime.year} ${fechaDateTime.hour}:${fechaDateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
       return fecha;
-    }
-  }
-
-  static Color obtenerColorSeveridad(String nivelSeveridad) {
-    switch (nivelSeveridad.toLowerCase()) {
-      case 'alta':
-        return Colors.red;
-      case 'media':
-        return Colors.orange;
-      case 'baja':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  static IconData obtenerIconoTipo(String tipo) {
-    switch (tipo.toLowerCase()) {
-      case 'solicitud':
-        return Icons.assignment;
-      case 'donacion':
-        return Icons.volunteer_activism;
-      case 'sistema':
-        return Icons.info;
-      default:
-        return Icons.notifications;
     }
   }
 } 
