@@ -9,14 +9,11 @@ import 'V2/services/usuario_service.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
-  // Asegurar que Flutter esté inicializado
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar Awesome Notifications globalmente con todos los canales necesarios
   await AwesomeNotifications().initialize(
-    null, // Usar el ícono de la app por defecto
+    null,
     [
-      // Canal principal para notificaciones
       NotificationChannel(
         channelKey: 'donaciones_channel',
         channelName: 'Notificaciones de Donaciones',
@@ -28,7 +25,6 @@ void main() async {
         playSound: true,
         enableVibration: true,
       ),
-      // Canal específico para solicitudes
       NotificationChannel(
         channelKey: 'solicitudes_channel',
         channelName: 'Solicitudes de Donación',
@@ -44,10 +40,8 @@ void main() async {
     debug: false,
   );
 
-  // Inicializar servicios de notificación
   await NotificacionService.initNotifications();
 
-  // Forzar orientación vertical
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -65,32 +59,31 @@ class MyApp extends StatelessWidget {
       title: 'Donaciones App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Colores principales de la aplicación
-        primaryColor: const Color(0xFF3D71B8), // Light navy blue similar to web
-        scaffoldBackgroundColor: const Color(0xFF25273F), // Slightly lighter dark navy background
+        primaryColor: const Color(0xFF3D71B8),
+        scaffoldBackgroundColor: const Color(0xFF25273F),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF25273F),
           elevation: 0,
         ),
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFE3AB1C), // Golden yellow accent
-          secondary: Color(0xFFFFD833), // Highlight yellow
-          surface: Color(0xFF12152C), // Very dark navy for cards
-          onSurface: Color(0xFFF6F6F8), // White text
-          background: Color(0xFF25273F), // Slightly lighter dark navy background
-          onBackground: Color(0xFFD9E5FF), // Lighter blue text
+          primary: Color(0xFFE3AB1C),
+          secondary: Color(0xFFFFD833),
+          surface: Color(0xFF12152C),
+          onSurface: Color(0xFFF6F6F8),
+          background: Color(0xFF25273F),
+          onBackground: Color(0xFFD9E5FF),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFFB8CCFF), // Lighter blue for buttons
+            foregroundColor: const Color(0xFFB8CCFF),
           ),
         ),
         textTheme: GoogleFonts.montserratTextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFE3AB1C), // Golden yellow
-            foregroundColor: const Color(0xFFF6F6F8), // White text
-            shape: const RoundedRectangleBorder(), // No border radius
+            backgroundColor: const Color(0xFFE3AB1C),
+            foregroundColor: const Color(0xFFF6F6F8),
+            shape: const RoundedRectangleBorder(),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -105,7 +98,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      // Define named routes
       initialRoute: '/',
       routes: {
         '/': (context) => const MainNavigation(),
@@ -133,16 +125,13 @@ class _MainNavigationState extends State<MainNavigation> {
     super.initState();
     _checkAuthenticationStatus();
 
-    // Conectar al WebSocket para recibir notificaciones
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Conectar al WebSocket después de que se haya construido la UI
       NotificacionService.conectarWebSocket();
     });
   }
 
   Future<void> _checkAuthenticationStatus() async {
     try {
-      // Check if user has valid JWT token
       final isAuthenticated = await UsuarioService.isAuthenticated();
       
       if (mounted) {
@@ -166,7 +155,6 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   void dispose() {
-    // Desconectar WebSocket al cerrar la aplicación
     super.dispose();
   }
 
@@ -176,12 +164,12 @@ class _MainNavigationState extends State<MainNavigation> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Color(0xFFE3AB1C), // Golden yellow
+                color: Color(0xFFE3AB1C),
               ),
             )
           : _isLoggedIn
-              ? const HomeScreen() // Si está logueado, muestra HomeScreen
-              : const LoginScreen(), // Si no está logueado, muestra LoginScreen
+              ? const HomeScreen()
+              : const LoginScreen(),
     );
   }
 }

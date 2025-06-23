@@ -81,7 +81,6 @@ class SolicitudController {
     return 'Rechazada';
   }
   
-  // Resumir productos
   String resumirProductos(String productos) {
     if (productos.isEmpty) return 'Sin productos';
     

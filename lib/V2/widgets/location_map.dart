@@ -5,18 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/location_service.dart';
 
-/// Widget that displays a map with the user's current location
 class LocationMapWidget extends StatefulWidget {
-  /// Function to call when location changes
   final Function(double latitude, double longitude)? onLocationChanged;
 
-  /// Initial latitude if available
   final double? initialLatitude;
 
-  /// Initial longitude if available
   final double? initialLongitude;
 
-  /// Height of the map widget
   final double height;
 
   const LocationMapWidget({
@@ -32,35 +27,27 @@ class LocationMapWidget extends StatefulWidget {
 }
 
 class _LocationMapWidgetState extends State<LocationMapWidget> {
-  /// Controller for the Google Map
   final Completer<GoogleMapController> _controller = Completer();
 
-  /// Set of markers to display on the map
   final Set<Marker> _markers = {};
 
-  /// Current camera position
   CameraPosition? _currentPosition;
 
-  /// Current marker position
   LatLng? _markerPosition;
 
-  /// Flag to indicate if the map is loading
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
 
-    // If we have initial coordinates, use them
     if (widget.initialLatitude != null && widget.initialLongitude != null) {
       _initializeMap(widget.initialLatitude!, widget.initialLongitude!);
     } else {
-      // Otherwise get current location
       _getCurrentLocation();
     }
   }
 
-  /// Initialize map with given coordinates
   void _initializeMap(double latitude, double longitude) {
     final position = LatLng(latitude, longitude);
 
@@ -76,13 +63,11 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
       _isLoading = false;
     });
 
-    // Notify parent about location if callback is provided
     if (widget.onLocationChanged != null) {
       widget.onLocationChanged!(latitude, longitude);
     }
   }
 
-  /// Update marker position on the map
   void _updateMarker() {
     if (_markerPosition == null) return;
 
@@ -101,7 +86,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
               _markerPosition = newPosition;
             });
 
-            // Notify parent about new location
             if (widget.onLocationChanged != null) {
               widget.onLocationChanged!(
                 newPosition.latitude,
@@ -114,7 +98,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
     });
   }
 
-  /// Get current location and update map
   Future<void> _getCurrentLocation() async {
     setState(() {
       _isLoading = true;
@@ -125,7 +108,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
       _initializeMap(location['latitude']!, location['longitude']!);
     } catch (e) {
       print('Error al obtener ubicación para el mapa: $e');
-      // Use default location as fallback
       _initializeMap(
         LocationService.defaultLatitude,
         LocationService.defaultLongitude,
@@ -133,7 +115,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
     }
   }
 
-  /// Handle tap on map to move marker
   void _handleMapTap(LatLng position) {
     setState(() {
       _markerPosition = position;
@@ -141,7 +122,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
 
     _updateMarker();
 
-    // Notify parent about new location
     if (widget.onLocationChanged != null) {
       widget.onLocationChanged!(
         position.latitude,
@@ -158,13 +138,12 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey),
-        color: Colors.grey[800], // Dark background for loading state
+        color: Colors.grey[800],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Stack(
           children: [
-            // Map
             _isLoading || _currentPosition == null
                 ? const Center(
               child: CircularProgressIndicator(
@@ -189,7 +168,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
             ),
 
 
-            // Refresh button
             Positioned(
               top: 8,
               right: 8,
@@ -209,7 +187,6 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
     );
   }
 
-  /// Set the map style to dark mode
   Future<void> _setMapStyle(GoogleMapController controller) async {
     const String mapStyle = '''
       [

@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     
-    <!-- Awesome Notifications Required Permissions -->
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
@@ -25,7 +24,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDlSh_zb2-FnGl_rMbFspcbbwjCNdc8KVQ" />
@@ -50,17 +48,12 @@
             </intent-filter>
         </activity>
 
-        <!-- Awesome Notifications NO requiere receivers manuales en la versión 0.10.1 -->
-        <!-- Los receivers se registran automáticamente por el plugin -->
-
-        <!-- MetaData para Flutter -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
     </application>
 
-    <!-- ✅ Permite al sistema buscar apps que manejen acciones de texto -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

@@ -14,46 +14,40 @@ class NotificacionService {
   static bool _notificationsInitialized = false;
   static StompClient? _stompClient;
 
-  /// Inicializa el servicio de notificaciones (no reinicializa Awesome Notifications)
   static Future<void> initNotifications() async {
     if (_notificationsInitialized) return;
 
     try {
-      // Solo solicitar permisos ya que Awesome Notifications se inicializa en main.dart
       await requestNotificationPermission();
       
       _notificationsInitialized = true;
-      print('✅ Servicio de notificaciones inicializado correctamente');
+      print('Servicio de notificaciones inicializado correctamente');
       
     } catch (e) {
-      print('❌ Error inicializando servicio de notificaciones: $e');
+      print('Error inicializando servicio de notificaciones: $e');
     }
   }
 
-  /// Solicita permisos de notificación
   static Future<void> requestNotificationPermission() async {
     try {
       bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
       if (!isAllowed) {
-        // Mostrar diálogo de permisos
         bool? permissionGranted = await AwesomeNotifications().requestPermissionToSendNotifications();
-        print('🔔 Permisos de notificación: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
+        print('Permisos de notificación: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
       } else {
-        print('✅ Permisos de notificación ya concedidos');
+        print('Permisos de notificación ya concedidos');
       }
     } catch (e) {
-      print('❌ Error solicitando permisos: $e');
+      print('Error solicitando permisos: $e');
     }
   }
 
-  /// Muestra una notificación usando Awesome Notifications
   static Future<void> _mostrarNotificacion(Notificacion notificacion) async {
     if (!_notificationsInitialized) {
       await initNotifications();
     }
 
     try {
-      // Determinar el color de la notificación basado en la severidad
       Color notificationColor = _obtenerColorPorSeveridad(notificacion.nivelSeveridad);
       
       await AwesomeNotifications().createNotification(
@@ -68,7 +62,7 @@ class NotificacionService {
           category: NotificationCategory.Message,
           autoDismissible: true,
           showWhen: true,
-          customSound: null, // Usar sonido por defecto
+          customSound: null,
           payload: {
             'notificacion_id': notificacion.id,
             'tipo': notificacion.tipo,
@@ -77,13 +71,12 @@ class NotificacionService {
         ),
       );
       
-      print('✅ Notificación mostrada con Awesome Notifications: ${notificacion.id}');
+      print('Notificación mostrada con Awesome Notifications: ${notificacion.id}');
     } catch (e) {
-      print('❌ Error al mostrar notificación: $e');
+      print('Error al mostrar notificación: $e');
     }
   }
 
-  /// Obtiene el color de la notificación basado en la severidad
   static Color _obtenerColorPorSeveridad(String severidad) {
     switch (severidad.toLowerCase()) {
       case 'alta':
@@ -92,7 +85,7 @@ class NotificacionService {
       case 'media':
         return Colors.orange;
       case 'baja':
-        return Colors.blue;
+        return Colors.green;
       default:
         return Colors.black;
     }
@@ -190,18 +183,16 @@ class NotificacionService {
     }
   }
 
-  /// Obtiene el color según el nivel de severidad para la UI
   static Color obtenerColorSeveridad(String severidad) {
     return _obtenerColorPorSeveridad(severidad);
   }
 
-  /// Obtiene el ícono según el tipo de notificación
   static IconData obtenerIconoTipo(String tipo) {
     switch (tipo.toLowerCase()) {
       case 'alerta':
         return Icons.warning;
       case 'solicitud':
-        return Icons.help_outline;
+        return Icons.bookmark;
       case 'donacion':
         return Icons.favorite;
       case 'sistema':
@@ -211,7 +202,7 @@ class NotificacionService {
     }
   }
 
-  /// Formatea la fecha para mostrar en la UI
+  
   static String formatearFecha(String fecha) {
     if (fecha.isEmpty) return 'Sin fecha';
     

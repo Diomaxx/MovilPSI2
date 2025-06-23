@@ -17,36 +17,32 @@ class SolicitudService {
 
   static bool _notificationsInitialized = false;
 
-  /// Inicializa el servicio de notificaciones de solicitudes
   static Future<void> initNotifications() async {
     if (_notificationsInitialized) return;
 
     try {
-      // Solo solicitar permisos ya que Awesome Notifications se inicializa en main.dart
       await requestNotificationPermission();
       
       _notificationsInitialized = true;
-      print('✅ Servicio de notificaciones de solicitudes inicializado correctamente');
+      print('Servicio de notificaciones de solicitudes inicializado correctamente');
       
     } catch (e) {
-      print('❌ Error inicializando servicio de notificaciones de solicitudes: $e');
+      print('Error inicializando servicio de notificaciones de solicitudes: $e');
     }
   }
 
-  /// Solicita permisos de notificación
   static Future<void> requestNotificationPermission() async {
     try {
       bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
       if (!isAllowed) {
         bool? permissionGranted = await AwesomeNotifications().requestPermissionToSendNotifications();
-        print('🔔 Permisos de notificación solicitudes: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
+        print('Permisos de notificación solicitudes: ${permissionGranted == true ? 'Concedidos' : 'Denegados'}');
       }
     } catch (e) {
-      print('❌ Error solicitando permisos de solicitudes: $e');
+      print('Error solicitando permisos de solicitudes: $e');
     }
   }
 
-  /// Muestra notificación para una solicitud usando Awesome Notifications
   static Future<void> _mostrarNotificacion(Solicitud solicitud) async {
     if (!_notificationsInitialized) {
       await initNotifications();
@@ -73,13 +69,12 @@ class SolicitudService {
         ),
       );
       
-      print('✅ Notificación de solicitud mostrada: ${solicitud.idSolicitud}');
+      print('Notificación de solicitud mostrada: ${solicitud.idSolicitud}');
     } catch (e) {
-      print('❌ Error al mostrar notificación de solicitud: $e');
+      print('Error al mostrar notificación de solicitud: $e');
     }
   }
 
-  /// Muestra notificación para una solicitud WebSocket usando Awesome Notifications
   static Future<void> _mostrarNotificacionWs(NuevaSolicitudWs solicitud) async {
     if (!_notificationsInitialized) {
       await initNotifications();
@@ -106,9 +101,9 @@ class SolicitudService {
         ),
       );
       
-      print('✅ Notificación WS de solicitud mostrada: ${solicitud.id}');
+      print('Notificación WS de solicitud mostrada: ${solicitud.id}');
     } catch (e) {
-      print('❌ Error al mostrar notificación WS: $e');
+      print('Error al mostrar notificación WS: $e');
     }
   }
 
