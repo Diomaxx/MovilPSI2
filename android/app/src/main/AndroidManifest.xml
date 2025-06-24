@@ -20,9 +20,9 @@
 
     <application
         android:enableOnBackInvokedCallback="true"
-        android:label="donaciones_movil"
+        android:label="D.A.S."
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

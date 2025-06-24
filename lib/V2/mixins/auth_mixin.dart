@@ -3,6 +3,9 @@ import '../services/jwt_service.dart';
 
 mixin AuthMixin<T extends StatefulWidget> on State<T> {
   
+  // Flag to prevent multiple simultaneous redirections
+  static bool _isRedirecting = false;
+  
   Future<bool> checkAuthentication() async {
     try {
       final isAuthenticated = await JwtService.isAuthenticated();
@@ -15,10 +18,17 @@ mixin AuthMixin<T extends StatefulWidget> on State<T> {
   }
   
   Future<void> validateAuthenticationAndRedirect() async {
+    // Prevent multiple simultaneous redirections
+    if (_isRedirecting) {
+      print('Redirection already in progress, skipping...');
+      return;
+    }
+    
     final isAuthenticated = await checkAuthentication();
     
-    if (!isAuthenticated && mounted) {
+    if (!isAuthenticated && mounted && !_isRedirecting) {
       print('Token expired or invalid - redirecting to login');
+      _isRedirecting = true;
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -28,12 +38,15 @@ mixin AuthMixin<T extends StatefulWidget> on State<T> {
         ),
       );
       
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/login').then((_) {
+        // Reset flag after navigation completes
+        _isRedirecting = false;
+      });
     }
   }
   
   void handleApiResponse(int statusCode) {
-    if (statusCode == 401) {
+    if (statusCode == 401 && !_isRedirecting) {
       print('Received 401 Unauthorized - token likely expired');
       validateAuthenticationAndRedirect();
     }
@@ -41,7 +54,7 @@ mixin AuthMixin<T extends StatefulWidget> on State<T> {
   
   Future<T?> makeAuthenticatedRequest<T>(
     Future<T> Function() apiCall, {
-    bool validateBefore = true,
+    bool validateBefore = false, // Changed default to false to be less aggressive
     bool validateAfter = true,
   }) async {
     try {
@@ -59,7 +72,8 @@ mixin AuthMixin<T extends StatefulWidget> on State<T> {
     } catch (e) {
       print('Error in authenticated request: $e');
       
-      if (validateAfter) {
+      // Only validate after if we get specific auth errors
+      if (validateAfter && e.toString().contains('401')) {
         validateAuthenticationAndRedirect();
       }
       

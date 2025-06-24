@@ -30,7 +30,7 @@ environment:
 dependencies:
   http: ^0.13.6
   image_picker: ^0.8.4+3
-  image: ^3.0.1
+  image: ^4.5.4
   shared_preferences: ^2.0.7
   auto_size_text: ^3.0.0
   stomp_dart_client: ^2.0.1
@@ -57,6 +57,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Dependencia para generar iconos automáticamente
+  flutter_launcher_icons: ^0.14.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,10 +71,24 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter_icons:
-  android: true
+flutter_launcher_icons:
+  android: "launcher_icon"
   ios: true
   image_path: "assets/logo.png"
+  min_sdk_android: 21 
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/logo.png"
+    background_color: "#000000"
+    theme_color: "#000000"
+  windows:
+    generate: true
+    image_path: "assets/logo.png"
+    icon_size: 48 
+  macos:
+    generate: true
+    image_path: "assets/logo.png"
 
 flutter:
 

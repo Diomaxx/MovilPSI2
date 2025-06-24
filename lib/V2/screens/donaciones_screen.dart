@@ -27,7 +27,6 @@ class _DonacionesScreenState extends State<DonacionesScreen> with AuthMixin {
   @override
   void initState() {
     super.initState();
-    validateAuthenticationAndRedirect();
     _cargarDonaciones();
     _cargarDatosUsuario();
   }
@@ -163,7 +162,7 @@ class _DonacionesScreenState extends State<DonacionesScreen> with AuthMixin {
       color: Colors.black,
       child: ListView.builder(
         padding: const EdgeInsets.only(
-          top: 50,
+          top: 110,
           bottom: 16,
 
         ),

@@ -24,7 +24,6 @@ class _MetricsScreenState extends State<MetricsScreen> with AuthMixin {
   @override
   void initState() {
     super.initState();
-    validateAuthenticationAndRedirect();
     _fetchMetrics();
   }
 

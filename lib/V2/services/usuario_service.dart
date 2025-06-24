@@ -62,13 +62,15 @@ class UsuarioService {
           
           if (data.containsKey('token')) {
             final token = data['token'] as String;
+            final expiration = data['expiration'];
             print('JWT token found in response');
-            await JwtService.saveToken(token);
+            await JwtService.saveTokenWithExpiration(token, expiration);
             print('JWT token saved successfully');
           } else if (data.containsKey('jwt')) {
             final token = data['jwt'] as String;
+            final expiration = data['expiration'];
             print('JWT token found in response (jwt field)');
-            await JwtService.saveToken(token);
+            await JwtService.saveTokenWithExpiration(token, expiration);
             print('JWT token saved successfully');
           } else {
             print('No JWT token found in login response');
@@ -127,15 +129,21 @@ class UsuarioService {
 
   static Future<bool> logout() async {
     try {
-      print('Logging out user...');
+      print('Starting logout process...');
       
-      await JwtService.clearToken();
-      print('JWT token cleared');
+      // Clear JWT token and related data
+      final tokenCleared = await JwtService.clearToken();
+      print('JWT token cleared: $tokenCleared');
       
-      await UserDataService.clearUserData();
-      print('User data cleared');
+      // Clear user data from local storage
+      final userDataCleared = await UserDataService.clearUserData();
+      print('User data cleared: $userDataCleared');
       
-      return true;
+      // Return true only if both operations succeeded
+      final success = tokenCleared && userDataCleared;
+      print('Logout completed successfully: $success');
+      
+      return success;
     } catch (e) {
       print('Error during logout: $e');
       return false;
@@ -144,6 +152,11 @@ class UsuarioService {
 
   static Future<bool> isAuthenticated() async {
     return await JwtService.isAuthenticated();
+  }
+
+  // Get current token to track user changes
+  static Future<String?> getCurrentToken() async {
+    return await JwtService.getToken();
   }
 
 } 

@@ -83,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> with AuthMixin {
     super.initState();
     NotificacionService.conectarWebSocket();
     _usuario = widget.usuario;
-    validateAuthenticationAndRedirect();
   }
 
   @override

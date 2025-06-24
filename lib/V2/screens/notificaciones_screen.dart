@@ -28,7 +28,6 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> with AuthMi
   @override
   void initState() {
     super.initState();
-    validateAuthenticationAndRedirect();
     _cargarNotificaciones();
 
     NotificacionService.addNuevaNotificacionListener(_onNuevaNotificacion);

@@ -119,6 +119,7 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   bool _isLoggedIn = false;
   bool _isLoading = true;
+  String? _lastCheckedToken; // Track token changes
 
   @override
   void initState() {
@@ -133,21 +134,30 @@ class _MainNavigationState extends State<MainNavigation> {
   Future<void> _checkAuthenticationStatus() async {
     try {
       final isAuthenticated = await UsuarioService.isAuthenticated();
+      final currentToken = await UsuarioService.getCurrentToken(); // We need to add this method
+      
+      // Check if token has changed (user switched)
+      bool tokenChanged = _lastCheckedToken != null && _lastCheckedToken != currentToken;
       
       if (mounted) {
         setState(() {
           _isLoggedIn = isAuthenticated;
           _isLoading = false;
+          _lastCheckedToken = currentToken;
         });
       }
       
       print('🔐 Authentication status: ${isAuthenticated ? 'AUTHENTICATED' : 'NOT AUTHENTICATED'}');
+      if (tokenChanged) {
+        print('🔄 Token changed - user switched');
+      }
     } catch (e) {
       print('❌ Error checking authentication: $e');
       if (mounted) {
         setState(() {
           _isLoggedIn = false;
           _isLoading = false;
+          _lastCheckedToken = null;
         });
       }
     }

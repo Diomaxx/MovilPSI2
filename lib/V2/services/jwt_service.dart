@@ -8,14 +8,55 @@ class JwtService {
   static Future<bool> saveToken(String token) async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      await prefs.remove(_tokenKey);
+      await prefs.remove(_tokenExpiryKey);
+      print('Previous token data cleared');
+      
       await prefs.setString(_tokenKey, token);
       
       final expiryTime = _getTokenExpiryTime(token);
       if (expiryTime != null) {
         await prefs.setInt(_tokenExpiryKey, expiryTime.millisecondsSinceEpoch);
+        print('JWT token saved successfully, expires at: $expiryTime');
+      } else {
+        print('JWT token saved successfully (no expiry time found)');
       }
       
-      print('JWT token saved successfully');
+      return true;
+    } catch (e) {
+      print('Error saving JWT token: $e');
+      return false;
+    }
+  }
+  
+  static Future<bool> saveTokenWithExpiration(String token, dynamic expiration) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      await prefs.remove(_tokenKey);
+      await prefs.remove(_tokenExpiryKey);
+      print('Previous token data cleared');
+      
+      await prefs.setString(_tokenKey, token);
+      
+      if (expiration != null) {
+        int expiryMillis;
+        if (expiration is int) {
+          expiryMillis = expiration;
+        } else if (expiration is String) {
+          expiryMillis = int.tryParse(expiration) ?? 0;
+        } else {
+          expiryMillis = 0;
+        }
+        
+        await prefs.setInt(_tokenExpiryKey, expiryMillis);
+        final expiryTime = DateTime.fromMillisecondsSinceEpoch(expiryMillis);
+        print('JWT token saved successfully, expires at: $expiryTime');
+      } else {
+        print('JWT token saved successfully (no expiry time provided)');
+      }
+      
       return true;
     } catch (e) {
       print('Error saving JWT token: $e');
@@ -52,9 +93,11 @@ class JwtService {
       final expiryTime = DateTime.fromMillisecondsSinceEpoch(expiryTimeMillis);
       final currentTime = DateTime.now();
       
-      final isExpired = currentTime.isAfter(expiryTime.subtract(const Duration(minutes: 5)));
+      final isExpired = currentTime.isAfter(expiryTime.subtract(const Duration(minutes: 1)));
       
       print('Token expiry check: ${isExpired ? 'EXPIRED' : 'VALID'}');
+      print('Current time: $currentTime');
+      print('Token expires at: $expiryTime');
       return isExpired;
     } catch (e) {
       print('Error checking token expiry: $e');

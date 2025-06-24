@@ -20,8 +20,25 @@ class _LoginScreenState extends State<LoginScreen> {
   String _errorMessage = '';
 
   @override
+  void initState() {
+    super.initState();
+    // Clear any previous authentication state when reaching login screen
+    _clearPreviousSession();
+  }
+
+  // Clear any lingering session data to ensure clean login
+  Future<void> _clearPreviousSession() async {
+    try {
+      await UsuarioService.logout();
+      print('Previous session cleared on login screen init');
+    } catch (e) {
+      print('Error clearing previous session: $e');
+    }
+  }
+
+  @override
   void dispose() {
-    
+    // Clean up text controllers
     _ciController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -48,6 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       print('Attempting to login with CI: ${_ciController.text.trim()}');
       
+      print('Clearing previous session data...');
+      await UsuarioService.logout();
       
       final userInfo = await UsuarioService.verifyUserByCI(_ciController.text.trim());
       
@@ -58,14 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       
-      
       if (!userInfo.active) {
         setState(() {
           _errorMessage = 'Usuario inactivo. Contacte al administrador.';
         });
         return;
       }
-      
       
       final usuario = await UsuarioService.login(
         _ciController.text.trim(),
@@ -75,15 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
       if (usuario != null) {
         print('Login successful, navigating to home');
         
-        
         usuario.admin = userInfo.admin;
         usuario.telefono = userInfo.telefono;
         usuario.active = userInfo.active;
 
-        
         await UserDataService.saveUserCi(_ciController.text.trim());
         await UserDataService.saveUserAdminStatus(usuario.admin);
-
 
         Future.microtask(() {
           Navigator.pushReplacementNamed(context, '/home', arguments: usuario);
